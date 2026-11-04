@@ -1,0 +1,350 @@
+{
+  "schema_version": 1,
+  "questions": [
+    {
+      "exam_number": 1,
+      "question_number": 1,
+      "major_category_code": "chapter_01",
+      "category_code": "chapter_01_section_01",
+      "publication_status": "published",
+      "is_cultural_history": false,
+      "is_art_history": false,
+      "cultural_history_category": null,
+      "content_blocks": [
+        {
+          "type": "text",
+          "text": "合成テスト用第1問。「検査対象1」と同じ表記を一つ選んでください。"
+        }
+      ],
+      "explanation_blocks": [
+        {
+          "type": "text",
+          "text": "「検査対象1」と一致する選択肢が正答です。学習用の実問題ではありません。"
+        }
+      ],
+      "source_text": "合成テスト用データ（外部資料ではありません） | https://example.invalid/synthetic-fixtures",
+      "choices": [
+        {
+          "choice_label": "①",
+          "content_blocks": [
+            {
+              "type": "text",
+              "text": "検査対象1"
+            }
+          ],
+          "is_correct": true,
+          "display_order": 1
+        },
+        {
+          "choice_label": "②",
+          "content_blocks": [
+            {
+              "type": "text",
+              "text": "比較用1-2"
+            }
+          ],
+          "is_correct": false,
+          "display_order": 2
+        },
+        {
+          "choice_label": "③",
+          "content_blocks": [
+            {
+              "type": "text",
+              "text": "比較用1-3"
+            }
+          ],
+          "is_correct": false,
+          "display_order": 3
+        },
+        {
+          "choice_label": "④",
+          "content_blocks": [
+            {
+              "type": "text",
+              "text": "比較用1-4"
+            }
+          ],
+          "is_correct": false,
+          "display_order": 4
+        }
+      ]
+    },
+    {
+      "exam_number": 1,
+      "question_number": 2,
+      "major_category_code": "chapter_01",
+      "category_code": "chapter_01_section_01",
+      "publication_status": "published",
+      "is_cultural_history": false,
+      "is_art_history": false,
+      "cultural_history_category": null,
+      "content_blocks": [
+        {
+          "type": "text",
+          "text": "合成テスト用第2問。「検査対象2」と同じ表記を一つ選んでください。"
+        }
+      ],
+      "explanation_blocks": [
+        {
+          "type": "text",
+          "text": "「検査対象2」と一致する選択肢が正答です。学習用の実問題ではありません。"
+        }
+      ],
+      "source_text": "合成テスト用データ（外部資料ではありません） | https://example.invalid/synthetic-fixtures",
+      "choices": [
+        {
+          "choice_label": "①",
+          "content_blocks": [
+            {
+              "type": "text",
+              "text": "比較用2-1"
+            }
+          ],
+          "is_correct": false,
+          "display_order": 1
+        },
+        {
+          "choice_label": "②",
+          "content_blocks": [
+            {
+              "type": "text",
+              "text": "検査対象2"
+            }
+          ],
+          "is_correct": true,
+          "display_order": 2
+        },
+        {
+          "choice_label": "③",
+          "content_blocks": [
+            {
+              "type": "text",
+              "text": "比較用2-3"
+            }
+          ],
+          "is_correct": false,
+          "display_order": 3
+        },
+        {
+          "choice_label": "④",
+          "content_blocks": [
+            {
+              "type": "text",
+              "text": "比較用2-4"
+            }
+          ],
+          "is_correct": false,
+          "display_order": 4
+        }
+      ]
+    },
+    {
+      "exam_number": 1,
+      "question_number": 3,
+      "major_category_code": "chapter_01",
+      "category_code": "chapter_01_section_01",
+      "publication_status": "published",
+      "is_cultural_history": false,
+      "is_art_history": false,
+      "cultural_history_category": null,
+      "content_blocks": [
+        {
+          "type": "text",
+          "text": "合成テスト用第3問。「検査対象3」と同じ表記を一つ選んでください。"
+        }
+      ],
+      "explanation_blocks": [
+        {
+          "type": "text",
+          "text": "「検査対象3」と一致する選択肢が正答です。学習用の実問題ではありません。"
+        }
+      ],
+      "source_text": "合成テスト用データ（外部資料ではありません） | https://example.invalid/synthetic-fixtures",
+      "choices": [
+        {
+          "choice_label": "①",
+          "content_blocks": [
+            {
+              "type": "text",
+              "text": "比較用3-1"
+            }
+          ],
+          "is_correct": false,
+          "display_order": 1
+        },
+        {
+          "choice_label": "②",
+          "content_blocks": [
+            {
+              "type": "text",
+              "text": "比較用3-2"
+            }
+          ],
+          "is_correct": false,
+          "display_order": 2
+        },
+        {
+          "choice_label": "③",
+          "content_blocks": [
+            {
+              "type": "text",
+              "text": "検査対象3"
+            }
+          ],
+          "is_correct": true,
+          "display_order": 3
+        },
+        {
+          "choice_label": "④",
+          "content_blocks": [
+            {
+              "type": "text",
+              "text": "比較用3-4"
+            }
+          ],
+          "is_correct": false,
+          "display_order": 4
+        }
+      ]
+    },
+    {
+      "exam_number": 1,
+      "question_number": 4,
+      "major_category_code": "chapter_02",
+      "category_code": "chapter_02_section_01",
+      "publication_status": "published",
+      "is_cultural_history": true,
+      "is_art_history": false,
+      "cultural_history_category": "other_cultural_history",
+      "content_blocks": [
+        {
+          "type": "text",
+          "text": "合成テスト用第4問。「検査対象4」と同じ表記を一つ選んでください。"
+        }
+      ],
+      "explanation_blocks": [
+        {
+          "type": "text",
+          "text": "「検査対象4」と一致する選択肢が正答です。学習用の実問題ではありません。"
+        }
+      ],
+      "source_text": "合成テスト用データ（外部資料ではありません） | https://example.invalid/synthetic-fixtures",
+      "choices": [
+        {
+          "choice_label": "①",
+          "content_blocks": [
+            {
+              "type": "text",
+              "text": "比較用4-1"
+            }
+          ],
+          "is_correct": false,
+          "display_order": 1
+        },
+        {
+          "choice_label": "②",
+          "content_blocks": [
+            {
+              "type": "text",
+              "text": "比較用4-2"
+            }
+          ],
+          "is_correct": false,
+          "display_order": 2
+        },
+        {
+          "choice_label": "③",
+          "content_blocks": [
+            {
+              "type": "text",
+              "text": "比較用4-3"
+            }
+          ],
+          "is_correct": false,
+          "display_order": 3
+        },
+        {
+          "choice_label": "④",
+          "content_blocks": [
+            {
+              "type": "text",
+              "text": "検査対象4"
+            }
+          ],
+          "is_correct": true,
+          "display_order": 4
+        }
+      ]
+    },
+    {
+      "exam_number": 1,
+      "question_number": 5,
+      "major_category_code": "chapter_02",
+      "category_code": "chapter_02_section_01",
+      "publication_status": "published",
+      "is_cultural_history": true,
+      "is_art_history": true,
+      "cultural_history_category": "art_history",
+      "content_blocks": [
+        {
+          "type": "text",
+          "text": "合成テスト用第5問。「検査対象5」と同じ表記を一つ選んでください。"
+        }
+      ],
+      "explanation_blocks": [
+        {
+          "type": "text",
+          "text": "「検査対象5」と一致する選択肢が正答です。学習用の実問題ではありません。"
+        }
+      ],
+      "source_text": "合成テスト用データ（外部資料ではありません） | https://example.invalid/synthetic-fixtures",
+      "choices": [
+        {
+          "choice_label": "①",
+          "content_blocks": [
+            {
+              "type": "text",
+              "text": "検査対象5"
+            }
+          ],
+          "is_correct": true,
+          "display_order": 1
+        },
+        {
+          "choice_label": "②",
+          "content_blocks": [
+            {
+              "type": "text",
+              "text": "比較用5-2"
+            }
+          ],
+          "is_correct": false,
+          "display_order": 2
+        },
+        {
+          "choice_label": "③",
+          "content_blocks": [
+            {
+              "type": "text",
+              "text": "比較用5-3"
+            }
+          ],
+          "is_correct": false,
+          "display_order": 3
+        },
+        {
+          "choice_label": "④",
+          "content_blocks": [
+            {
+              "type": "text",
+              "text": "比較用5-4"
+            }
+          ],
+          "is_correct": false,
+          "display_order": 4
+        }
+      ]
+    }
+  ]
+}

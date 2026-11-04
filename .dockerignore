@@ -1,0 +1,43 @@
+.git
+**/.git
+.env
+.env.*
+!.env.example
+**/.env
+**/.env.*
+**/node_modules
+**/.nuxt
+**/.output
+**/coverage
+**/.data
+**/log/*
+**/tmp/*
+**/.DS_Store
+**/config/master.key
+**/config/credentials*.yml.enc
+**/config/credentials
+**/*.pem
+**/*.key
+
+# Never send copyrighted sources or OCR/images to a build context.
+**/[pP][aA][sS][tT]-[eE][xX][aA][mM]
+**/[pP][aA][sS][tT]-[eE][xX][aA][mM]/**
+**/[gG][lL][oO][sS][sS][aA][rR][yY]*
+**/分析
+**/分析/**
+# Full classification reference stays on the local workstation.
+**/[cC][lL][aA][sS][sS][iI][fF][iI][cC][aA][tT][iI][oO][nN].[mM][dD]*
+**/歴検**.[pP][dD][fF]
+**/歴検**.[zZ][iI][pP]
+**/詳説日本史*
+**/日本史用語集*
+**/日本史新課程用語*
+
+# Shared optional local-only policy and transient workflow files.
+**/[lL][oO][cC][aA][lL]-[oO][nN][lL][yY]/
+**/[lL][oO][cC][aA][lL]-[oO][nN][lL][yY]/**
+/docs/workflow/.context.lock/
+/docs/workflow/state.json.*.tmp
+
+# Nuxt static-generation compatibility link; not a source file.
+frontend/dist

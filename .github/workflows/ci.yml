@@ -1,0 +1,64 @@
+name: Template checks
+on:
+  push:
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  harness:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Reject local-only materials in tracked files and history
+        run: node scripts/check-private-sources.mjs
+      - name: Check progress, completion gates, and source protection
+        run: node --test --test-concurrency=1 scripts/context.test.mjs scripts/workflow-policy.test.mjs scripts/workspace-policy.test.mjs scripts/check-private-sources.test.mjs
+      - name: Validate workflow state and evidence references
+        run: node scripts/context.mjs check
+  verify:
+    needs: harness
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - name: Prepare isolated development settings
+        run: cp .env.example .env
+      - name: Validate template configuration and sample content
+        run: node scripts/check-template.mjs
+      - name: Build containers
+        run: docker compose build
+      - name: Create isolated PostgreSQL test database
+        run: |
+          docker compose up -d db --wait
+          docker compose exec -T db sh -c 'createdb -U "$POSTGRES_USER" basic_japanese_history_test'
+      - name: Check PostgreSQL API and security regressions
+        run: docker compose run --rm -e APP_ENV=test -e DB_NAME=basic_japanese_history_test frontend sh -c 'npm run db:migrate && npm run test:server'
+      - name: Check frontend and production build
+        run: docker compose run --rm frontend sh -c 'npm run security:check && npm test && npm run typecheck && npm run build'
+      - name: Stop isolated services
+        if: always()
+        run: docker compose down
+  netlify-static:
+    needs: verify
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check static build regression guards
+        run: python3 -B -m unittest discover -s scripts -p 'test_netlify_build.py'
+      - name: Read Node version from Netlify configuration
+        id: netlify
+        run: |
+          netlify_node_version=$(python3 scripts/check-netlify-build.py --node-version)
+          echo "node-version=$netlify_node_version" >> "$GITHUB_OUTPUT"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ steps.netlify.outputs.node-version }}
+      - name: Generate and verify the Netlify publish directory
+        run: python3 scripts/check-netlify-build.py

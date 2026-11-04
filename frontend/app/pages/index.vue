@@ -1,0 +1,683 @@
+<script setup lang="ts">
+import { EXAM_SET_COUNT, FREE_EXAM_MAX, catalogExamLabel, catalogExamStartNumber, type ExamCatalogEntry } from '~/utils/examCatalog'
+import { CULTURAL_HISTORY_CATEGORIES, HISTORY_TOPICS, serializeHistoryTopicSelection } from '~/utils/historyTopics'
+import type { CulturalHistoryCategoryCode } from '~/utils/examConfig'
+import {
+  createPracticeSeed,
+  selectPracticePositions,
+  shufflePracticeSequence,
+  type PracticeOrder,
+} from '~/utils/practiceSequence'
+
+type LauncherMode = 'exam' | 'conditions' | 'incorrect'
+
+const title = SITE.name
+const description = SITE.description
+
+useSeoMeta({
+  title,
+  description,
+  ogTitle: title,
+  ogDescription: description,
+})
+
+const qualification = useQualifiedExamAccess()
+const hasFullAccess = qualification.allowed
+const { data: publicCatalog, status: publicCatalogStatus, error: publicCatalogError, refresh: refreshPublicCatalog } = usePracticeFilterCatalog(computed(() => ({})), hasFullAccess)
+// Static slots contain no invented question counts or positions. Resolve them only after starting.
+const staticExams: ExamCatalogEntry[] = Array.from({ length: EXAM_SET_COUNT }, (_, index) => ({ exam_number: index + 1, question_numbers: [] }))
+const catalogExams = computed(() => hasFullAccess.value
+  ? (publicCatalog.value ?? []).filter(exam => catalogExamStartNumber(exam) !== undefined)
+  : staticExams)
+const launcherMode = ref<LauncherMode>('exam')
+const selectedMajorCategory = ref('')
+const selectedCategory = ref('')
+const selectedHistoryCategories = ref<CulturalHistoryCategoryCode[]>([])
+const selectedHistoryTopic = computed(() => serializeHistoryTopicSelection(selectedHistoryCategories.value))
+const culturalFilterOptions = CULTURAL_HISTORY_CATEGORIES.map(item => ({
+  ...item, filterLabel: HISTORY_TOPICS.find(topic => topic.value === item.value)!.filterLabel,
+}))
+const allCulturalHistorySelected = computed({
+  get: () => culturalFilterOptions.every(item => selectedHistoryCategories.value.includes(item.value)),
+  set: (selected: boolean) => {
+    selectedHistoryCategories.value = selected ? culturalFilterOptions.map(item => item.value) : []
+  },
+})
+const someCulturalHistorySelected = computed(() => selectedHistoryCategories.value.length > 0 && !allCulturalHistorySelected.value)
+const startingPractice = ref(false)
+const practiceStartError = ref('')
+const availableCategories = computed(() => selectedMajorCategory.value
+  ? getCategoriesByMajorCategory(selectedMajorCategory.value)
+  : [])
+const hasSubjectFilter = computed(() => Boolean(selectedMajorCategory.value || selectedCategory.value || selectedHistoryTopic.value !== 'all'))
+watch(selectedMajorCategory, () => {
+  if (!availableCategories.value.some(item => item.value === selectedCategory.value)) selectedCategory.value = ''
+}, { flush: 'sync' })
+watch([selectedMajorCategory, selectedCategory, selectedHistoryTopic], () => {
+  practiceStartError.value = ''
+})
+
+const freeExams = computed(() => catalogExams.value.filter(exam => exam.access !== 'paid_membership_required' && exam.exam_number <= FREE_EXAM_MAX))
+const availableExams = computed(() => (
+  hasFullAccess.value ? catalogExams.value.filter(exam => exam.access !== 'paid_membership_required') : freeExams.value
+))
+const availableExamNumbers = computed(() => availableExams.value.map(exam => exam.exam_number))
+const selectedExamNumbers = ref<number[]>([...availableExamNumbers.value])
+watch(selectedExamNumbers, () => { practiceStartError.value = '' })
+
+const allExamsSelected = computed({
+  get: () => (
+    availableExamNumbers.value.length > 0
+    && selectedExamNumbers.value.length === availableExamNumbers.value.length
+    && availableExamNumbers.value.every(examNumber => selectedExamNumbers.value.includes(examNumber))
+  ),
+  set: (selected: boolean) => {
+    selectedExamNumbers.value = selected ? [...availableExamNumbers.value] : []
+  },
+})
+const someExamsSelected = computed(() => (
+  selectedExamNumbers.value.length > 0 && !allExamsSelected.value
+))
+const sortedSelectedExamNumbers = computed(() => (
+  [...selectedExamNumbers.value].sort((left, right) => left - right)
+))
+const subjectQuery = computed<Record<string, string>>(() => ({
+  ...(selectedMajorCategory.value ? { major_category_code: selectedMajorCategory.value } : {}),
+  ...(selectedCategory.value ? { category_code: selectedCategory.value } : {}),
+  ...(selectedHistoryTopic.value !== 'all' ? { history_topic: selectedHistoryTopic.value } : {}),
+}))
+const {
+  data: conditionCatalog, error: conditionCatalogError,
+  refresh: refreshConditionCatalog, scopeKey: conditionScopeKey,
+} = usePracticeFilterCatalog(subjectQuery, computed(() => hasFullAccess.value && launcherMode.value === 'conditions'))
+const countReady = computed(() => publicCatalogStatus.value === 'success' && conditionCatalog.value !== null)
+const conditionSequence = computed(() => selectPracticePositions(
+  (conditionCatalog.value ?? []).filter(exam => exam.access !== 'paid_membership_required'), sortedSelectedExamNumbers.value,
+))
+const selectedQuestionCount = computed(() => countReady.value ? conditionSequence.value.length : null)
+const hasConditionSelection = computed(() => sortedSelectedExamNumbers.value.length > 0)
+const canStartConditionalPractice = computed(() => hasConditionSelection.value && (!hasFullAccess.value || countReady.value && selectedQuestionCount.value! > 0))
+const currentStartContext = () => JSON.stringify([conditionScopeKey.value, sortedSelectedExamNumbers.value, launcherMode.value])
+const retryConditionCount = async () => {
+  if (publicCatalogError.value) await refreshPublicCatalog()
+  await refreshConditionCatalog()
+}
+
+const examIsLocked = (examNumber: number) => examNumber > FREE_EXAM_MAX && !hasFullAccess.value
+const examTarget = (exam: ExamCatalogEntry) => (
+  examIsLocked(exam.exam_number) ? '/premium' : hasFullAccess.value
+    ? `/practice/${exam.exam_number}/${catalogExamStartNumber(exam)!}`
+    : { path: '/practice/start', query: { exams: String(exam.exam_number) } }
+)
+const startConditionalPractice = async (order: PracticeOrder) => {
+  if (!canStartConditionalPractice.value || startingPractice.value) return
+  startingPractice.value = true
+  practiceStartError.value = ''
+  const context = currentStartContext()
+  const selectedExams = [...sortedSelectedExamNumbers.value]
+
+  const query: Record<string, string> = {
+    exams: selectedExams.join(','),
+    ...subjectQuery.value,
+  }
+
+  try {
+    if (!hasFullAccess.value) {
+      await navigateTo({ path: '/practice/start', query: { ...query, ...(order === 'random' ? { order, seed: String(createPracticeSeed()) } : {}) } })
+      return
+    }
+    const catalog = await refreshConditionCatalog()
+    if (!catalog || context !== currentStartContext() || launcherMode.value !== 'conditions') return
+    let sequence = selectPracticePositions(catalog.filter(exam => exam.access !== 'paid_membership_required'), selectedExams)
+    if (order === 'random') {
+      const seed = createPracticeSeed()
+      sequence = shufflePracticeSequence(sequence, seed)
+      query.order = order
+      query.seed = String(seed)
+    }
+    const firstPosition = sequence[0]
+    if (!firstPosition) return
+    await navigateTo({
+      path: `/practice/${firstPosition.examNumber}/${firstPosition.questionNumber}`,
+      query,
+    })
+  }
+  catch {
+    if (context === currentStartContext()) practiceStartError.value = '演習を開始できませんでした。通信状況を確認して、もう一度お試しください。'
+  }
+  finally {
+    startingPractice.value = false
+  }
+}
+
+watch(availableExamNumbers, (examNumbers, previousExamNumbers) => {
+  const previouslySelectedAll = (
+    (previousExamNumbers.length === 0 && selectedExamNumbers.value.length === 0)
+    || previousExamNumbers.length > 0 && previousExamNumbers.every(examNumber => selectedExamNumbers.value.includes(examNumber))
+  )
+  selectedExamNumbers.value = previouslySelectedAll
+    ? [...examNumbers]
+    : selectedExamNumbers.value.filter(examNumber => examNumbers.includes(examNumber))
+})
+
+</script>
+
+<template>
+  <div class="home-main">
+    <section class="overview-section" aria-labelledby="overview-title">
+      <div class="overview-copy">
+        <h1 id="overview-title">基礎日本史ラボとは</h1>
+        <p class="overview-tagline">{{ SITE.tagline }}</p>
+        <p>
+          {{ SITE.description }}
+        </p>
+        <div class="overview-actions">
+          <NuxtLink class="overview-link" to="/exam-overview">→試験概要を見る</NuxtLink>
+        </div>
+      </div>
+      <div class="overview-art" aria-hidden="true">
+        <svg class="japanese-motif" viewBox="0 0 200 200" fill="none" focusable="false">
+          <defs>
+            <clipPath id="home-japanese-motif-circle">
+              <circle cx="100" cy="100" r="86" />
+            </clipPath>
+            <pattern id="home-japanese-motif-waves" width="48" height="24" patternUnits="userSpaceOnUse">
+              <path d="M-24 24a24 24 0 0 1 48 0 24 24 0 0 1 48 0M-16 24a16 16 0 0 1 32 0m16 0a16 16 0 0 1 32 0M-8 24a8 8 0 0 1 16 0m32 0a8 8 0 0 1 16 0" />
+            </pattern>
+          </defs>
+          <circle class="motif-paper" cx="100" cy="100" r="86" />
+          <circle class="motif-sun" cx="100" cy="77" r="30" />
+          <g clip-path="url(#home-japanese-motif-circle)">
+            <path class="motif-horizon" d="M14 122h172" />
+            <path class="motif-waves" d="M14 122h172v64H14z" />
+          </g>
+          <circle class="motif-outline" cx="100" cy="100" r="86" />
+        </svg>
+      </div>
+    </section>
+
+    <section id="practice-launcher" class="practice-launcher" aria-labelledby="practice-launcher-title">
+      <div class="launcher-heading">
+        <div>
+          <h2 id="practice-launcher-title" class="section-heading">
+            <span>問題演習を始める</span>
+          </h2>
+        </div>
+        <p>公開中の模擬試験を1問ずつ解いて、理解を確かめられます。章・節や文化史の区分を指定した演習にも取り組めます。</p>
+      </div>
+
+      <div class="launcher-tabs" role="tablist" aria-label="問題演習の開始方法">
+        <button
+          id="exam-mode-tab"
+          type="button"
+          role="tab"
+          :aria-selected="launcherMode === 'exam'"
+          aria-controls="exam-mode-panel"
+          :class="{ active: launcherMode === 'exam' }"
+          @click="launcherMode = 'exam'"
+        >
+          <UIcon name="i-lucide-files" />
+          模擬試験を選ぶ
+        </button>
+        <button
+          id="conditions-mode-tab"
+          type="button"
+          role="tab"
+          :aria-selected="launcherMode === 'conditions'"
+          aria-controls="conditions-mode-panel"
+          :class="{ active: launcherMode === 'conditions' }"
+          @click="launcherMode = 'conditions'"
+        >
+          <UIcon name="i-lucide-list-filter" />
+          条件を指定
+        </button>
+        <button id="incorrect-mode-tab" type="button" role="tab" :aria-selected="launcherMode === 'incorrect'" aria-controls="incorrect-mode-panel" :class="{ active: launcherMode === 'incorrect' }" @click="launcherMode = 'incorrect'"><UIcon name="i-lucide-list-restart" />間違えた問題</button>
+      </div>
+
+      <div
+        v-if="launcherMode === 'exam'"
+        id="exam-mode-panel"
+        class="launcher-panel"
+        role="tabpanel"
+        aria-labelledby="exam-mode-tab"
+      >
+        <p v-if="hasFullAccess && (publicCatalogStatus === 'pending' || publicCatalogStatus === 'idle')" class="catalog-loading" role="status">
+          <span class="catalog-spinner" aria-hidden="true"></span>
+          <span>模擬試験を読み込んでいます</span>
+        </p>
+        <p v-else-if="publicCatalogError" class="practice-start-error" role="alert">模擬試験を読み込めませんでした。<button class="secondary-link" type="button" @click="refreshPublicCatalog()">再読み込み</button></p>
+        <p v-else-if="hasFullAccess && !availableExams.length" role="status">現在利用できる公開問題はありません。</p>
+        <p v-if="qualification.status.value === 'error'" class="practice-start-error" role="alert">利用資格を確認できません。<button type="button" @click="qualification.refresh()">再確認</button></p>
+        <div class="exam-grid-heading">
+          <p><strong>{{ hasFullAccess ? `公開中 ${catalogExams.length}回` : `模擬試験 全${EXAM_SET_COUNT}回` }}</strong><span>大問の順に演習</span></p>
+          <NuxtLink v-if="PAYMENTS_ENABLED && !hasFullAccess" class="premium-info-link" to="/premium">
+            <UIcon name="i-lucide-lock-keyhole" />
+            模擬試験{{ FREE_EXAM_MAX + 1 }}以降はプレミアム会員向けです
+          </NuxtLink>
+        </div>
+        <div class="exam-grid">
+          <NuxtLink
+            v-for="exam in catalogExams"
+            :key="exam.exam_number"
+            class="exam-card"
+            :class="{ 'exam-card-locked': examIsLocked(exam.exam_number) }"
+            :to="examTarget(exam)"
+            :aria-label="examIsLocked(exam.exam_number) ? `模擬試験${exam.exam_number}はプレミアム会員向けです` : `模擬試験${exam.exam_number}を始める`"
+          >
+            <span class="exam-card-copy">
+              <strong>{{ catalogExamLabel(exam.exam_number) }}</strong>
+              <span v-if="hasFullAccess">{{ exam.groups?.length ? `${exam.groups.length}大問・` : '' }}{{ exam.question_numbers.length }}問収録</span>
+              <span v-else>{{ examTargetName(exam.exam_number) }}</span>
+            </span>
+            <UIcon :name="examIsLocked(exam.exam_number) ? 'i-lucide-lock-keyhole' : 'i-lucide-arrow-right'" aria-hidden="true" />
+          </NuxtLink>
+        </div>
+      </div>
+
+      <div
+        v-else-if="launcherMode === 'conditions'"
+        id="conditions-mode-panel"
+        class="launcher-panel"
+        role="tabpanel"
+        aria-labelledby="conditions-mode-tab"
+      >
+        <form class="condition-form" @submit.prevent="startConditionalPractice('sequential')">
+          <div class="condition-fields">
+            <fieldset class="condition-fieldset" :disabled="startingPractice">
+              <legend>分野</legend>
+              <p class="condition-help">章・節と、文化史全体や各区分の条件を組み合わせられます。</p>
+              <div class="subject-select-grid">
+                <div><label for="practice-major-category">大分類（章）</label><select id="practice-major-category" v-model="selectedMajorCategory"><option value="">すべての章</option><option v-for="item in MAJOR_CATEGORIES" :key="item.value" :value="item.value">{{ item.label }}</option></select></div>
+                <div><label for="practice-category">小分類（節）</label><select id="practice-category" v-model="selectedCategory" :disabled="!selectedMajorCategory"><option value="">すべての節</option><option v-for="item in availableCategories" :key="item.value" :value="item.value">{{ item.label }}</option></select></div>
+              </div>
+              <fieldset class="culture-filter-fieldset">
+                <legend>文化史の絞り込み</legend>
+                <p class="condition-help">複数選択できます。未選択の場合は絞り込みません。</p>
+                <label class="culture-all-selector">
+                  <input v-model="allCulturalHistorySelected" type="checkbox" :indeterminate="someCulturalHistorySelected">
+                  <span>文化史全般に絞る</span>
+                </label>
+                <div class="culture-checkbox-grid">
+                  <label v-for="item in culturalFilterOptions" :key="item.value" :class="{ selected: selectedHistoryCategories.includes(item.value) }">
+                    <input v-model="selectedHistoryCategories" type="checkbox" name="history-topics" :value="item.value">
+                    <span>{{ item.filterLabel }}</span>
+                  </label>
+                </div>
+              </fieldset>
+              <p class="condition-help">文化史全般には、美術史・音楽史・文学史も含まれます。選んだ範囲の知識を使う横断問題も含みます。</p>
+            </fieldset>
+            <fieldset class="condition-fieldset" :disabled="startingPractice">
+              <legend>対象模擬試験</legend>
+              <div class="condition-field-heading">
+                <p>複数選択できます</p>
+                <label class="all-selector">
+                  <input
+                    v-model="allExamsSelected"
+                    type="checkbox"
+                    :indeterminate="someExamsSelected"
+                  >
+                  <span>全選択</span>
+                </label>
+              </div>
+              <div class="number-checkbox-grid exam-number-grid">
+                <label
+                  v-for="exam in availableExams"
+                  :key="exam.exam_number"
+                  :class="{ selected: selectedExamNumbers.includes(exam.exam_number) }"
+                >
+                  <input
+                    v-model="selectedExamNumbers"
+                    type="checkbox"
+                    name="exam-numbers"
+                    :value="exam.exam_number"
+                  >
+                  <span>{{ catalogExamLabel(exam.exam_number) }}</span>
+                </label>
+              </div>
+            </fieldset>
+
+
+          </div>
+
+          <p v-if="practiceStartError" class="practice-start-error" role="alert">{{ practiceStartError }}</p>
+          <p v-if="hasConditionSelection && selectedQuestionCount === 0" class="practice-start-error" role="status">この条件に合う公開問題はまだありません。分野や対象模擬試験を変更してください。</p>
+          <div class="condition-submit">
+            <p v-if="publicCatalogError || conditionCatalogError" class="practice-start-error" role="alert">
+              件数を確認できませんでした。
+              <button type="button" class="secondary-link" @click="retryConditionCount()">件数を再読み込み</button>
+            </p>
+            <p v-else-if="hasFullAccess && (publicCatalogStatus === 'pending' || publicCatalogStatus === 'idle')" role="status">公開問題の件数を確認中です。</p>
+            <p v-else-if="hasConditionSelection" aria-live="polite">
+              <span>選択中</span>
+              {{ sortedSelectedExamNumbers.length }}回の模擬試験・{{ hasSubjectFilter ? '条件に合う公開問題' : '選択した公開問題' }}
+              <strong v-if="countReady">全{{ selectedQuestionCount }}問</strong>
+              <strong v-else-if="hasFullAccess" role="status">件数を確認中です。</strong><span v-else>開始時に件数を確認します。</span>
+            </p>
+            <p v-else class="selection-required">
+              <span>選択内容を確認してください</span>
+              模擬試験を1つ以上選択してください
+            </p>
+            <div class="condition-actions">
+              <button class="primary-link" type="submit" :disabled="!canStartConditionalPractice || startingPractice">
+                <UIcon name="i-lucide-list-ordered" />
+                {{ startingPractice ? '確認中です' : '順番に始める' }}
+              </button>
+              <button
+                class="secondary-link"
+                type="button"
+                :disabled="!canStartConditionalPractice || startingPractice"
+                @click="startConditionalPractice('random')"
+              >
+                <UIcon name="i-lucide-shuffle" />
+                ランダムに始める
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
+      <div v-if="launcherMode === 'incorrect'" id="incorrect-mode-panel" class="launcher-panel" role="tabpanel" aria-labelledby="incorrect-mode-tab"><IncorrectReviewPanel /></div>
+    </section>
+
+    <section id="usage-guide" class="home-section policy-section" aria-labelledby="usage-guide-title">
+      <div class="section-title">
+        <h2 id="usage-guide-title" class="section-heading">
+          <span>利用にあたって</span>
+        </h2>
+      </div>
+      <dl class="usage-details">
+        <div class="usage-row">
+          <dt>{{ PAYMENTS_ENABLED ? (FREE_EXAM_MAX > 0 ? `模擬試験1〜${FREE_EXAM_MAX}は無料` : '会員資格に応じて演習') : 'すべての公開問題を無料で演習' }}</dt>
+          <dd>
+            <p>{{ PAYMENTS_ENABLED && FREE_EXAM_MAX === 0 ? '問題の演習にはプレミアム会員資格が必要です。' : '無料の公開問題はログインなしで利用できます。' }}解答履歴の保存にはログインが必要です。</p>
+          </dd>
+        </div>
+        <div v-if="PAYMENTS_ENABLED" class="usage-row">
+          <dt>{{ PRICE_LABEL }}の買い切り</dt>
+          <dd>
+            <p>プレミアム会員は模擬試験{{ FREE_EXAM_MAX + 1 }}以降も利用できます。月額料金や自動更新はありません。</p>
+            <NuxtLink class="usage-premium-link" to="/premium">
+              <span>プレミアム会員について</span>
+              <UIcon name="i-lucide-arrow-right" aria-hidden="true" />
+            </NuxtLink>
+          </dd>
+        </div>
+        <div class="usage-row">
+          <dt>根拠資料も確認</dt>
+          <dd>
+            <p>各問題の解説と、出題の根拠となる資料を確認できます。</p>
+          </dd>
+        </div>
+      </dl>
+    </section>
+    <UpdatesHistory />
+  </div>
+</template>
+
+<style scoped>
+.exam-card-locked { background: var(--surface-soft); color: var(--muted); }
+.home-main { min-width: 0; background: var(--surface-soft); --home-gutter: clamp(24px, 4vw, 64px); }
+.practice-launcher {
+  scroll-margin-top: calc(var(--site-navigation-height, var(--header-height)) + 20px);
+  padding: 44px var(--home-gutter) 52px;
+  border-top: 1px solid var(--line);
+  background: var(--surface-soft);
+}
+.launcher-heading { display: grid; grid-template-columns: minmax(220px, .9fr) minmax(0, 1fr); align-items: center; gap: 24px; }
+.launcher-heading h2 { margin: 0; font-size: 1.875rem; line-height: 1.3; }
+.launcher-heading > p { max-width: 480px; margin: 0; color: var(--muted); line-height: 1.8; }
+.section-heading { display: flex; align-items: center; gap: 10px; }
+.section-heading::before { content: ''; flex: 0 0 6px; width: 6px; height: 24px; border-radius: 3px; background: var(--teal); }
+.section-heading > span { min-width: 0; }
+.launcher-tabs {
+  width: min(600px, 100%);
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin-top: 28px;
+  padding: 5px;
+  gap: 4px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--surface-tint);
+}
+.launcher-tabs button {
+  white-space: normal;
+  overflow-wrap: anywhere;
+  min-height: 48px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--text-secondary);
+  font-weight: 800;
+  cursor: pointer;
+}
+.launcher-tabs button.active { background: var(--surface); color: var(--teal-dark); box-shadow: 0 2px 6px rgba(var(--shadow-color), .08); }
+.launcher-tabs :deep(svg) { width: 19px; height: 19px; }
+.launcher-panel { padding-top: 28px; }
+.catalog-loading { display: flex; align-items: center; gap: 10px; margin: 0 0 18px; color: var(--text-secondary); line-height: 1.8; }
+.catalog-spinner { flex: 0 0 18px; width: 18px; height: 18px; border: 2px solid var(--line); border-top-color: var(--teal); border-radius: 50%; animation: catalog-spin .8s linear infinite; }
+@keyframes catalog-spin { to { transform: rotate(360deg); } }
+.exam-grid-heading {
+  min-height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  margin-bottom: 14px;
+}
+.exam-grid-heading p { display: flex; align-items: baseline; gap: 10px; margin: 0; }
+.exam-grid-heading strong { font-size: 1rem; }
+.exam-grid-heading span { color: var(--muted); font-size: 0.8125rem; font-weight: 700; }
+.exam-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr)); gap: 12px; }
+.exam-card {
+  min-height: 104px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 20px 22px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--surface);
+  color: var(--ink);
+  text-decoration: none;
+  box-shadow: 0 3px 12px rgba(var(--shadow-color), .025);
+  transition: border-color .15s, background .15s, transform .15s;
+}
+.exam-card:hover { border-color: var(--teal); background: var(--surface-soft); transform: translateY(-2px); }
+.exam-card-copy { min-width: 0; display: grid; gap: 7px; }
+.exam-card strong { color: var(--teal-dark); font-size: 1.125rem; line-height: 1.4; }
+.exam-card-copy > span { color: var(--muted); font-size: 0.8125rem; }
+.exam-card :deep(.iconify) { flex: 0 0 20px; width: 20px; height: 20px; color: var(--teal-dark); }
+.premium-info-link { display: inline-flex; align-items: center; gap: 5px; color: var(--teal-dark); font-size: 0.8125rem; font-weight: 800; }
+.condition-form { border: 1px solid var(--line); border-radius: 16px; background: var(--surface); }
+.condition-fields { display: grid; gap: 28px; padding: 28px; }
+.condition-help { margin: 10px 0; color: var(--muted); font-size: .8125rem; line-height: 1.7; }
+.subject-select-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; margin-top: 16px; }
+.subject-select-grid > div { min-width: 0; }
+.subject-select-grid label { display: block; margin-bottom: 7px; color: var(--text-secondary); font-size: .8125rem; font-weight: 800; }
+.subject-select-grid select { width: 100%; min-width: 0; min-height: 44px; padding: 8px 10px; border: 1px solid var(--line-strong); border-radius: 5px; background: var(--surface); color: var(--ink); font-size: .875rem; }
+.culture-filter-fieldset { min-width: 0; margin: 24px 0 0; padding: 0; border: 0; }
+.culture-filter-fieldset legend { font-size: .875rem; font-weight: 800; }
+.culture-all-selector { display: flex; align-items: center; gap: 9px; width: fit-content; min-height: 44px; color: var(--ink); font-size: .875rem; font-weight: 800; cursor: pointer; }
+.culture-checkbox-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; margin-top: 8px; }
+.culture-checkbox-grid label { display: flex; align-items: center; gap: 9px; min-width: 0; min-height: 48px; padding: 10px 12px; border: 1px solid var(--line); border-radius: 5px; font-size: .875rem; cursor: pointer; }
+.culture-checkbox-grid label.selected { border-color: var(--teal); background: var(--surface-tint); }
+.culture-checkbox-grid input, .culture-all-selector input { width: 17px; height: 17px; flex: 0 0 auto; accent-color: var(--teal); }
+.practice-start-error { margin: 0; padding: 0 28px 20px; color: #a23b2a; font-weight: 700; line-height: 1.7; }
+.condition-fieldset { min-width: 0; margin: 0; padding: 0; border: 0; }
+.condition-fieldset + .condition-fieldset { padding-top: 26px; border-top: 1px solid var(--line); }
+.condition-fieldset legend { padding: 0; color: var(--ink); font-size: 1.0625rem; font-weight: 900; }
+.condition-field-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin: 7px 0 13px;
+}
+.condition-field-heading p { margin: 0; color: var(--muted); font-size: 0.8125rem; }
+.all-selector {
+  min-height: 36px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 10px;
+  border: 1px solid var(--line-strong);
+  border-radius: 5px;
+  background: var(--surface-soft);
+  color: var(--text-secondary);
+  font-size: 0.8125rem;
+  font-weight: 800;
+  cursor: pointer;
+}
+.all-selector input { width: 17px; height: 17px; margin: 0; accent-color: var(--teal); }
+.number-checkbox-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 150px), 1fr)); gap: 8px; }
+.number-checkbox-grid label {
+  min-width: 0;
+  min-height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 8px 6px;
+  border: 1px solid var(--line);
+  border-radius: 5px;
+  background: var(--surface);
+  color: var(--text-secondary);
+  font-weight: 900;
+  cursor: pointer;
+  transition: border-color .15s, background .15s;
+}
+.number-checkbox-grid label:hover { border-color: var(--teal); }
+.number-checkbox-grid label.selected { border-color: var(--teal); background: var(--surface-selected); color: var(--teal-dark); }
+.number-checkbox-grid input { width: 16px; height: 16px; flex: 0 0 16px; margin: 0; accent-color: var(--teal); }
+.condition-submit {
+  min-height: 82px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 16px 26px;
+  border-top: 1px solid var(--line);
+  background: var(--surface-soft);
+}
+.condition-submit p { margin: 0; color: var(--text-secondary); font-weight: 800; }
+.condition-submit p span { display: block; margin-bottom: 3px; color: var(--muted); font-size: 0.6875rem; }
+.condition-submit p strong { margin-left: 8px; color: var(--teal-dark); }
+.condition-submit .selection-required { color: #a23b2a; }
+.condition-actions { display: flex; flex: 0 0 auto; gap: 10px; }
+.condition-actions button { white-space: nowrap; }
+.condition-actions button:disabled { opacity: .45; cursor: not-allowed; }
+.subject-label { white-space: nowrap; }
+.overview-section {
+  position: relative;
+  isolation: isolate;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 200px;
+  align-items: center;
+  gap: 32px;
+  padding: 56px var(--home-gutter);
+  background: linear-gradient(115deg, #fff 38%, var(--surface-tint) 100%);
+}
+.overview-copy { max-width: 680px; }
+.overview-copy h1 { margin: 0; font-size: 3rem; font-weight: 800; letter-spacing: .025em; line-height: 1.4; }
+.overview-copy > p { margin: 16px 0 0; color: var(--text-secondary); font-size: 1rem; line-height: 1.95; }
+.overview-copy > .overview-tagline { margin-top: 20px; color: var(--teal-dark); font-size: 1.0625rem; font-weight: 700; }
+.overview-actions { margin-top: 22px; }
+.overview-link { display: inline-flex; align-items: center; min-height: 44px; color: var(--teal-dark); font-weight: 700; text-decoration: underline; text-decoration-color: var(--line-strong); text-underline-offset: 6px; }
+.overview-link:hover { color: var(--teal-dark); text-decoration-color: currentColor; }
+.overview-art { display: grid; place-items: center; width: 200px; height: 200px; }
+.japanese-motif { width: 200px; height: 200px; }
+.motif-paper { fill: var(--surface-soft); }
+.motif-sun { fill: var(--teal-dark); }
+.motif-outline, .motif-horizon { stroke: var(--line-strong); stroke-width: 1; }
+.motif-waves { fill: url(#home-japanese-motif-waves); }
+.japanese-motif pattern path { stroke: var(--teal-dark); stroke-width: 1; opacity: .3; }
+.home-section { padding: 44px var(--home-gutter) 52px; }
+.section-title { display: flex; align-items: baseline; gap: 14px; margin-bottom: 26px; }
+.section-title h2 { margin: 0; font-size: 1.875rem; }
+.updates-section { background: var(--surface-soft); }
+.update-list { border-top: 1px solid var(--line); }
+.update-list article { min-height: 68px; display: grid; grid-template-columns: 120px 1fr; align-items: center; gap: 18px; border-bottom: 1px solid var(--line); }
+.update-list time { color: var(--teal-dark); font-weight: 800; }
+.update-list p { margin: 0; color: var(--text-secondary); }
+.policy-section {
+  scroll-margin-top: calc(var(--site-navigation-height, var(--header-height)) + 20px);
+  background: var(--surface);
+}
+.usage-details { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 230px), 1fr)); gap: 16px; margin: 0; }
+.usage-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  align-content: start;
+  gap: 12px;
+  padding: 24px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--surface-soft);
+}
+.usage-row dt { color: var(--ink); font-size: 1rem; font-weight: 700; line-height: 1.9; }
+.usage-row dd { min-width: 0; margin: 0; color: var(--text-secondary); font-size: 0.9375rem; line-height: 1.9; }
+.usage-row p { margin: 0; }
+.usage-premium-link {
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 4px;
+  color: var(--teal-dark);
+  font-size: 0.875rem;
+  font-weight: 700;
+  text-decoration: underline;
+  text-decoration-color: var(--line-strong);
+  text-underline-offset: 4px;
+}
+.usage-premium-link:hover { text-decoration-color: currentColor; }
+.usage-premium-link:focus-visible { outline: 2px solid var(--teal-dark); outline-offset: 4px; }
+.usage-premium-link :deep(.iconify) { flex: 0 0 16px; width: 16px; height: 16px; }
+
+@media (max-width: 960px) {
+  .overview-section { grid-template-columns: minmax(0, 1fr); }
+  .overview-art { display: none; }
+  .launcher-heading { grid-template-columns: minmax(0, 1fr); gap: 14px; }
+  .usage-row { grid-template-columns: minmax(0, 1fr); gap: 8px; }
+}
+
+@media (max-width: 640px) {
+  .subject-select-grid { grid-template-columns: 1fr; }
+  .culture-checkbox-grid { grid-template-columns: 1fr; }
+  .practice-launcher { padding: 32px 20px 38px; }
+  .launcher-heading { align-items: flex-start; flex-direction: column; gap: 12px; }
+  .launcher-heading h2 { font-size: 1.6875rem; }
+  .launcher-heading > p { font-size: 0.875rem; }
+  .launcher-tabs { width: 100%; margin-top: 24px; }
+  .exam-grid-heading { align-items: flex-start; flex-direction: column; gap: 8px; }
+  .exam-grid { grid-template-columns: minmax(0, 1fr); }
+  .exam-card { min-height: 86px; padding: 18px; }
+  .condition-fields { padding: 20px; }
+  .condition-field-heading { align-items: flex-end; }
+  .number-checkbox-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 7px; }
+  .number-checkbox-grid label { min-height: 46px; gap: 6px; padding: 8px 6px; }
+  .number-checkbox-grid input { width: 15px; height: 15px; flex-basis: 15px; }
+  .condition-submit { align-items: stretch; flex-direction: column; padding: 18px 20px 20px; }
+  .condition-actions { width: 100%; flex-direction: column; }
+  .condition-actions button { width: 100%; }
+  .overview-section { min-height: auto; padding: 36px 20px; }
+  .overview-copy h1 { font-size: 2rem; }
+  .overview-copy > .overview-tagline { font-size: 1rem; }
+  .usage-details { grid-template-columns: minmax(0, 1fr); }
+  .home-section { padding: 44px 20px; }
+  .update-list article { grid-template-columns: 1fr; gap: 5px; padding: 15px 0; }
+  .usage-row { padding: 22px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .catalog-spinner { animation: none; }
+  .exam-card { transition: none; }
+  .exam-card:hover { transform: none; }
+}
+@media (max-width: 640px) { .launcher-tabs button { flex-direction: column; gap: 4px; padding: 8px 2px; font-size: .8125rem; line-height: 1.4; } }
+</style>

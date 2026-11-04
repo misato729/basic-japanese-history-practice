@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "local_only": {
+    "directory_names": [
+      "local-only",
+      "past-exam",
+      "分析"
+    ],
+    "filename_prefixes": [
+      "glossary",
+      "classification.md",
+      "詳説日本史",
+      "日本史用語集",
+      "日本史新課程用語"
+    ]
+  }
+}

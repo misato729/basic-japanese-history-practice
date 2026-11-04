@@ -1,0 +1,446 @@
+{
+  "schema_version": 1,
+  "site": {
+    "id": "basic-japanese-history-practice",
+    "name": "基礎日本史ラボ",
+    "short_name": "基礎日本史ラボ",
+    "exam_name": "歴検2級日本史・センター試験日本史",
+    "description": "歴検2級日本史・センター試験日本史を目指す人のための基礎日本史演習サービスです。",
+    "tagline": "基礎を固め、日本史を読み解く。",
+    "logo_path": "/images/logo.svg",
+    "primary_color": "#e60020",
+    "contact_email": "misato0729.official@gmail.com",
+    "overview": [
+      {
+        "title": "対象とする学習",
+        "body": "歴検2級日本史とセンター試験日本史に向けて、日本史の基礎知識と資料の読み取りを確認します。"
+      },
+      {
+        "title": "模擬試験の番号",
+        "body": "偶数番号は歴検2級日本史、奇数番号はセンター試験日本史の模擬問題です。公式過去問ではありません。"
+      },
+      {
+        "title": "現在の収録内容",
+        "body": "現在利用できる公開問題はありません。模擬試験の内容を準備しています。センター試験日本史型の模試は6大問36問です。"
+      },
+      {
+        "title": "学習の進め方",
+        "body": "問題の公開後は1問ずつ回答と解説を確認できます。会員登録すると解答履歴とお気に入りを使えます。"
+      }
+    ]
+  },
+  "exam": {
+    "set_count": 10,
+    "questions_per_exam": 5,
+    "choice_labels": [
+      "①",
+      "②",
+      "③",
+      "④"
+    ],
+    "formats": {
+      "group_practice": {
+        "group_count": 1,
+        "allowed_group_question_counts": [
+          7,
+          8
+        ]
+      },
+      "rekiken_mock": {
+        "group_count": 4,
+        "question_count": 30,
+        "allowed_group_question_counts": [
+          7,
+          8
+        ]
+      },
+      "center_mock": {
+        "group_count": 6,
+        "question_count": 36,
+        "allowed_group_question_counts": [
+          4,
+          6,
+          8
+        ],
+        "group_question_counts": [
+          6,
+          6,
+          6,
+          6,
+          4,
+          8
+        ]
+      }
+    },
+    "numbering": {
+      "even": "歴検2級日本史",
+      "odd": "センター試験日本史"
+    }
+  },
+  "categories": {
+    "major": [
+      {
+        "value": "chapter_01",
+        "label": "第1章 日本文化のあけぼの"
+      },
+      {
+        "value": "chapter_02",
+        "label": "第2章 古墳とヤマト政権"
+      },
+      {
+        "value": "chapter_03",
+        "label": "第3章 律令国家の形成"
+      },
+      {
+        "value": "chapter_04",
+        "label": "第4章 貴族政治の展開"
+      },
+      {
+        "value": "chapter_05",
+        "label": "第5章 院政と武士の躍進"
+      },
+      {
+        "value": "chapter_06",
+        "label": "第6章 武家政権の成立"
+      },
+      {
+        "value": "chapter_07",
+        "label": "第7章 武家社会の成長"
+      },
+      {
+        "value": "chapter_08",
+        "label": "第8章 近世の幕開け"
+      },
+      {
+        "value": "chapter_09",
+        "label": "第9章 幕藩体制の成立と展開"
+      },
+      {
+        "value": "chapter_10",
+        "label": "第10章 幕藩体制の動揺"
+      },
+      {
+        "value": "chapter_11",
+        "label": "第11章 近世から近代へ"
+      },
+      {
+        "value": "chapter_12",
+        "label": "第12章 近代国家の成立"
+      },
+      {
+        "value": "chapter_13",
+        "label": "第13章 近代国家の展開"
+      },
+      {
+        "value": "chapter_14",
+        "label": "第14章 近代の産業と生活"
+      },
+      {
+        "value": "chapter_15",
+        "label": "第15章 恐慌と第二次世界大戦"
+      },
+      {
+        "value": "chapter_16",
+        "label": "第16章 占領下の日本"
+      },
+      {
+        "value": "chapter_17",
+        "label": "第17章 高度成長の時代"
+      },
+      {
+        "value": "chapter_18",
+        "label": "第18章 激動する世界と日本"
+      },
+      {
+        "value": "unclassified",
+        "label": "未分類"
+      }
+    ],
+    "minor": [
+      {
+        "value": "chapter_01_section_01",
+        "label": "1 文化の始まり",
+        "major_category_value": "chapter_01"
+      },
+      {
+        "value": "chapter_01_section_02",
+        "label": "2 農耕社会の成立",
+        "major_category_value": "chapter_01"
+      },
+      {
+        "value": "chapter_02_section_01",
+        "label": "1 古墳文化の展開",
+        "major_category_value": "chapter_02"
+      },
+      {
+        "value": "chapter_02_section_02",
+        "label": "2 飛鳥の朝廷",
+        "major_category_value": "chapter_02"
+      },
+      {
+        "value": "chapter_03_section_01",
+        "label": "1 律令国家への道",
+        "major_category_value": "chapter_03"
+      },
+      {
+        "value": "chapter_03_section_02",
+        "label": "2 平城京の時代",
+        "major_category_value": "chapter_03"
+      },
+      {
+        "value": "chapter_03_section_03",
+        "label": "3 律令国家の文化",
+        "major_category_value": "chapter_03"
+      },
+      {
+        "value": "chapter_03_section_04",
+        "label": "4 律令国家の変容",
+        "major_category_value": "chapter_03"
+      },
+      {
+        "value": "chapter_04_section_01",
+        "label": "1 摂関政治",
+        "major_category_value": "chapter_04"
+      },
+      {
+        "value": "chapter_04_section_02",
+        "label": "2 国風文化",
+        "major_category_value": "chapter_04"
+      },
+      {
+        "value": "chapter_04_section_03",
+        "label": "3 地方政治の展開と武士",
+        "major_category_value": "chapter_04"
+      },
+      {
+        "value": "chapter_05_section_01",
+        "label": "1 院政の始まり",
+        "major_category_value": "chapter_05"
+      },
+      {
+        "value": "chapter_05_section_02",
+        "label": "2 院政と平氏政権",
+        "major_category_value": "chapter_05"
+      },
+      {
+        "value": "chapter_06_section_01",
+        "label": "1 鎌倉幕府の成立",
+        "major_category_value": "chapter_06"
+      },
+      {
+        "value": "chapter_06_section_02",
+        "label": "2 武士の社会",
+        "major_category_value": "chapter_06"
+      },
+      {
+        "value": "chapter_06_section_03",
+        "label": "3 モンゴル襲来と幕府の衰退",
+        "major_category_value": "chapter_06"
+      },
+      {
+        "value": "chapter_06_section_04",
+        "label": "4 鎌倉文化",
+        "major_category_value": "chapter_06"
+      },
+      {
+        "value": "chapter_07_section_01",
+        "label": "1 室町幕府の成立",
+        "major_category_value": "chapter_07"
+      },
+      {
+        "value": "chapter_07_section_02",
+        "label": "2 幕府の衰退と庶民の台頭",
+        "major_category_value": "chapter_07"
+      },
+      {
+        "value": "chapter_07_section_03",
+        "label": "3 室町文化",
+        "major_category_value": "chapter_07"
+      },
+      {
+        "value": "chapter_07_section_04",
+        "label": "4 戦国大名の登場",
+        "major_category_value": "chapter_07"
+      },
+      {
+        "value": "chapter_08_section_01",
+        "label": "1 織豊政権",
+        "major_category_value": "chapter_08"
+      },
+      {
+        "value": "chapter_08_section_02",
+        "label": "2 桃山文化",
+        "major_category_value": "chapter_08"
+      },
+      {
+        "value": "chapter_09_section_01",
+        "label": "1 幕藩体制の成立",
+        "major_category_value": "chapter_09"
+      },
+      {
+        "value": "chapter_09_section_02",
+        "label": "2 幕藩社会の構造",
+        "major_category_value": "chapter_09"
+      },
+      {
+        "value": "chapter_09_section_03",
+        "label": "3 幕政の安定",
+        "major_category_value": "chapter_09"
+      },
+      {
+        "value": "chapter_09_section_04",
+        "label": "4 経済の発展",
+        "major_category_value": "chapter_09"
+      },
+      {
+        "value": "chapter_09_section_05",
+        "label": "5 元禄文化",
+        "major_category_value": "chapter_09"
+      },
+      {
+        "value": "chapter_10_section_01",
+        "label": "1 幕政の改革",
+        "major_category_value": "chapter_10"
+      },
+      {
+        "value": "chapter_10_section_02",
+        "label": "2 宝暦・天明期の文化",
+        "major_category_value": "chapter_10"
+      },
+      {
+        "value": "chapter_10_section_03",
+        "label": "3 幕府の衰退と近代への道",
+        "major_category_value": "chapter_10"
+      },
+      {
+        "value": "chapter_10_section_04",
+        "label": "4 化政文化",
+        "major_category_value": "chapter_10"
+      },
+      {
+        "value": "chapter_11_section_01",
+        "label": "1 開国と幕末の動乱",
+        "major_category_value": "chapter_11"
+      },
+      {
+        "value": "chapter_11_section_02",
+        "label": "2 幕府の滅亡と新政府の発足",
+        "major_category_value": "chapter_11"
+      },
+      {
+        "value": "chapter_12_section_01",
+        "label": "1 明治維新と富国強兵",
+        "major_category_value": "chapter_12"
+      },
+      {
+        "value": "chapter_12_section_02",
+        "label": "2 立憲国家の成立",
+        "major_category_value": "chapter_12"
+      },
+      {
+        "value": "chapter_13_section_01",
+        "label": "1 日清・日露戦争と国際関係",
+        "major_category_value": "chapter_13"
+      },
+      {
+        "value": "chapter_13_section_02",
+        "label": "2 第一次世界大戦と日本",
+        "major_category_value": "chapter_13"
+      },
+      {
+        "value": "chapter_13_section_03",
+        "label": "3 ワシントン体制",
+        "major_category_value": "chapter_13"
+      },
+      {
+        "value": "chapter_14_section_01",
+        "label": "1 近代産業の発展",
+        "major_category_value": "chapter_14"
+      },
+      {
+        "value": "chapter_14_section_02",
+        "label": "2 近代文化の発達",
+        "major_category_value": "chapter_14"
+      },
+      {
+        "value": "chapter_14_section_03",
+        "label": "3 市民生活の変容と大衆文化",
+        "major_category_value": "chapter_14"
+      },
+      {
+        "value": "chapter_15_section_01",
+        "label": "1 恐慌の時代",
+        "major_category_value": "chapter_15"
+      },
+      {
+        "value": "chapter_15_section_02",
+        "label": "2 軍部の台頭",
+        "major_category_value": "chapter_15"
+      },
+      {
+        "value": "chapter_15_section_03",
+        "label": "3 第二次世界大戦",
+        "major_category_value": "chapter_15"
+      },
+      {
+        "value": "chapter_16_section_01",
+        "label": "1 占領と改革",
+        "major_category_value": "chapter_16"
+      },
+      {
+        "value": "chapter_16_section_02",
+        "label": "2 冷戦の開始と講和",
+        "major_category_value": "chapter_16"
+      },
+      {
+        "value": "chapter_17_section_01",
+        "label": "1 55年体制",
+        "major_category_value": "chapter_17"
+      },
+      {
+        "value": "chapter_17_section_02",
+        "label": "2 経済復興から高度経済成長へ",
+        "major_category_value": "chapter_17"
+      },
+      {
+        "value": "chapter_18_section_01",
+        "label": "1 経済大国への道",
+        "major_category_value": "chapter_18"
+      },
+      {
+        "value": "chapter_18_section_02",
+        "label": "2 冷戦の終結と日本社会の変容",
+        "major_category_value": "chapter_18"
+      },
+      {
+        "value": "unclassified_section",
+        "label": "未分類",
+        "major_category_value": "unclassified"
+      }
+    ]
+  },
+  "payments": {
+    "enabled": false,
+    "free_exam_count": 10,
+    "amount": 500,
+    "currency": "jpy"
+  },
+  "cultural_history_categories": [
+    {
+      "value": "art_history",
+      "label": "美術史"
+    },
+    {
+      "value": "music_history",
+      "label": "音楽史"
+    },
+    {
+      "value": "literature_history",
+      "label": "文学史"
+    },
+    {
+      "value": "other_cultural_history",
+      "label": "その他"
+    }
+  ]
+}
