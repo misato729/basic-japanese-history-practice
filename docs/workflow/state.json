@@ -1,10 +1,10 @@
 {
   "schema_version": 1,
-  "revision": 5,
-  "updated_at": "2026-11-04T21:35:33.360Z",
+  "revision": 16,
+  "updated_at": "2026-11-04T22:04:40.969Z",
   "workspace_relative_to_repo": ".",
-  "active_context": "product",
-  "last_checkpoint": null,
+  "active_context": "operations",
+  "last_checkpoint": "docs/workflow/handoffs/2026-11-04T22-04-40-969Z-r16.json",
   "gate_policy": {
     "version": 1,
     "legacy_task_ids": []
@@ -58,18 +58,16 @@
       "id": "basic_japanese_history_bootstrap",
       "context": "development",
       "title": "日本史ラボを独立コピーして基礎日本史ラボのローカル環境を構築する",
-      "status": "doing",
+      "status": "done",
       "depends_on": [],
       "authorization": "requested",
       "request_ref": "2026-11-05 ユーザー依頼：日本史ラボをクローンし環境構築。偶数は歴検2級日本史、奇数はセンター試験日本史。",
-      "next_action": "ローカル環境構築は完了。スマートフォン実操作の確認と、初回コミットを依頼された後のHEAD依存checkpointを記録待ち。",
+      "next_action": "追加依頼を待つ",
       "evidence": [
-        "docs/verification.md",
-        "docs/bootstrap-review.md",
-        "docs/copy-manifest.md"
+        "docs/git-delivery.md"
       ],
-      "last_verified_at": "2026-11-04T18:19:45.446Z",
-      "verification_scope": "独立Compose起動、専用DBの初期0件、API応答、共通168件・フロント253件・API122件の対象範囲（修正後関連58件再検査）・型検査・製品ビルド・静的出力検査コード7件・独立レビュー。PC初期画面確認。スマートフォン実操作未確認。コミット・外部接続・公開なし。",
+      "last_verified_at": "2026-11-04T21:59:53.476Z",
+      "verification_scope": "独立Compose起動・初期データ分離・テスト/型/ビルド/独立レビュー。後続の公開案内PC/SP実操作で初期の未確認表示範囲を補完。管理画面のログイン後操作と実問題プレビューは未確認。",
       "acceptance": [
         {
           "id": "checks",
@@ -78,9 +76,9 @@
           "verification": "対象に必要な既存検査を選び、結果と根拠を記録する",
           "status": "passed",
           "evidence": [
-            "docs/verification.md"
+            "docs/git-delivery.md"
           ],
-          "checked_at": "2026-11-04T18:19:45.446Z"
+          "checked_at": "2026-11-04T21:59:53.476Z"
         },
         {
           "id": "review",
@@ -89,31 +87,39 @@
           "verification": "別担当のレビューで未解決の問題がないことを確認する",
           "status": "passed",
           "evidence": [
-            "docs/bootstrap-review.md"
+            "docs/git-delivery.md"
           ],
-          "checked_at": "2026-11-04T18:19:45.446Z",
-          "reviewer": "review_bootstrap"
+          "checked_at": "2026-11-04T21:59:53.476Z",
+          "reviewer": "center_2019_2020"
         }
       ],
       "execution": {
         "worker": "root",
         "max_attempts": 3,
-        "attempts": []
+        "attempts": [
+          {
+            "number": 1,
+            "outcome": "passed",
+            "summary": "検査結果と独立レビューを確認。詳細は各検証記録とローカル証跡に保持。",
+            "at": "2026-11-04T21:59:54.027Z",
+            "failed_criteria": []
+          }
+        ]
       }
     },
     {
       "id": "center_mock_01_authoring",
       "context": "product",
       "title": "センター過去問に基づく模試1セットを作成する",
-      "status": "doing",
+      "status": "done",
       "depends_on": [],
       "authorization": "requested",
       "request_ref": "2026-11-05 ユーザー依頼：past-exam/センターの過去問を使い、日本史ラボと同じ作問方法で模試1セット。 追加指定：全問四択で可。",
-      "next_action": "原稿の作問・検証は完了。DB登録は別タスクで管理。初回コミット後にHEAD依存の完了記録を保存する。",
+      "next_action": "追加依頼を待つ",
       "evidence": [
         "docs/authoring-status.md"
       ],
-      "last_verified_at": "2026-11-04T18:56:56.461Z",
+      "last_verified_at": "2026-11-04T21:59:53.476Z",
       "verification_scope": "全36問144肢・100点・全問四択、原典画像の全肢/本文/解説照合、一次史料4問の引用校合、独立解答36件一致・全体横断レビュー・Markdown納品QA。実測難度/DB登録/公開/UI検証は対象外。",
       "acceptance": [
         {
@@ -125,7 +131,7 @@
           "evidence": [
             "docs/authoring-status.md"
           ],
-          "checked_at": "2026-11-04T18:56:56.461Z"
+          "checked_at": "2026-11-04T21:59:53.476Z"
         },
         {
           "id": "review",
@@ -136,27 +142,37 @@
           "evidence": [
             "docs/authoring-status.md"
           ],
-          "checked_at": "2026-11-04T18:56:56.461Z",
+          "checked_at": "2026-11-04T21:59:53.476Z",
           "reviewer": "center_2019_2020"
         }
       ],
       "execution": {
         "worker": "root",
         "max_attempts": 3,
-        "attempts": []
+        "attempts": [
+          {
+            "number": 1,
+            "outcome": "passed",
+            "summary": "検査結果と独立レビューを確認。詳細は各検証記録とローカル証跡に保持。",
+            "at": "2026-11-04T21:59:54.928Z",
+            "failed_criteria": []
+          }
+        ]
       }
     },
     {
       "id": "center_knowhow_git_delivery",
       "context": "operations",
       "title": "センター型作問ノウハウを蓄積し非公開リポジトリへ初回送信",
-      "status": "doing",
+      "status": "done",
       "depends_on": [],
       "authorization": "requested",
       "request_ref": "2026-11-05 ユーザー依頼：ノウハウをドキュメントへ継続蓄積、リモート作成・commit/push。追加：DB登録。",
-      "next_action": "必要な実装・検査と独立レビューを行う",
-      "evidence": [],
-      "last_verified_at": null,
+      "next_action": "検証結果の文書と完了記録を送信し、リモート一致を確認する",
+      "evidence": [
+        "docs/git-delivery.md"
+      ],
+      "last_verified_at": "2026-11-04T21:59:53.476Z",
       "verification_scope": "ノウハウ文書、継続更新ルール、初期アプリのGit送信。原資料・問題原稿・秘密値を除外。",
       "acceptance": [
         {
@@ -164,38 +180,52 @@
           "kind": "automated",
           "description": "依頼された変更範囲の検査が成功する",
           "verification": "対象に必要な既存検査を選び、結果と根拠を記録する",
-          "status": "pending",
-          "evidence": [],
-          "checked_at": null
+          "status": "passed",
+          "evidence": [
+            "docs/git-delivery.md"
+          ],
+          "checked_at": "2026-11-04T21:59:53.476Z"
         },
         {
           "id": "review",
           "kind": "review",
           "description": "実装担当以外が受入条件と成果物を確認する",
           "verification": "別担当のレビューで未解決の問題がないことを確認する",
-          "status": "pending",
-          "evidence": [],
-          "checked_at": null,
-          "reviewer": null
+          "status": "passed",
+          "evidence": [
+            "docs/git-delivery.md"
+          ],
+          "checked_at": "2026-11-04T21:59:53.476Z",
+          "reviewer": "source_index"
         }
       ],
       "execution": {
         "worker": "root",
         "max_attempts": 3,
-        "attempts": []
+        "attempts": [
+          {
+            "number": 1,
+            "outcome": "passed",
+            "summary": "検査結果と独立レビューを確認。詳細は各検証記録とローカル証跡に保持。",
+            "at": "2026-11-04T21:59:56.917Z",
+            "failed_criteria": []
+          }
+        ]
       }
     },
     {
       "id": "center_mock_01_db_registration",
       "context": "operations",
       "title": "センター型模試1をローカルDBへ下書き登録",
-      "status": "doing",
+      "status": "done",
       "depends_on": [],
       "authorization": "requested",
       "request_ref": "2026-11-05 ユーザー依頼：ノウハウをドキュメントへ継続蓄積、リモート作成・commit/push。追加：DB登録。",
-      "next_action": "必要な実装・検査と独立レビューを行う",
-      "evidence": [],
-      "last_verified_at": null,
+      "next_action": "追加依頼を待つ",
+      "evidence": [
+        "docs/git-delivery.md"
+      ],
+      "last_verified_at": "2026-11-04T21:59:53.476Z",
       "verification_scope": "専用ローカルDB、6大問36問、原稿の全件保持、対象外保全。公開・本番DBは対象外。",
       "acceptance": [
         {
@@ -203,25 +233,37 @@
           "kind": "automated",
           "description": "依頼された変更範囲の検査が成功する",
           "verification": "対象に必要な既存検査を選び、結果と根拠を記録する",
-          "status": "pending",
-          "evidence": [],
-          "checked_at": null
+          "status": "passed",
+          "evidence": [
+            "docs/git-delivery.md"
+          ],
+          "checked_at": "2026-11-04T21:59:53.476Z"
         },
         {
           "id": "review",
           "kind": "review",
           "description": "実装担当以外が受入条件と成果物を確認する",
           "verification": "別担当のレビューで未解決の問題がないことを確認する",
-          "status": "pending",
-          "evidence": [],
-          "checked_at": null,
-          "reviewer": null
+          "status": "passed",
+          "evidence": [
+            "docs/git-delivery.md"
+          ],
+          "checked_at": "2026-11-04T21:59:53.476Z",
+          "reviewer": "center_2019_2020"
         }
       ],
       "execution": {
         "worker": "root",
         "max_attempts": 3,
-        "attempts": []
+        "attempts": [
+          {
+            "number": 1,
+            "outcome": "passed",
+            "summary": "検査結果と独立レビューを確認。詳細は各検証記録とローカル証跡に保持。",
+            "at": "2026-11-04T21:59:55.881Z",
+            "failed_criteria": []
+          }
+        ]
       }
     }
   ]
