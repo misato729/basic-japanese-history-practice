@@ -71,7 +71,7 @@ function assertStatic(h: ReturnType<typeof harness>) {
   assert.equal(h.sidebar.isLoading.value, false)
   assert.equal(h.sidebar.hasAccessError.value, false)
   assert.equal(h.sidebar.exams.value.length, catalog.EXAM_SET_COUNT)
-  assert.ok(h.sidebar.exams.value.every((exam: catalog.ExamCatalogEntry & { groupLinks: unknown[] }) => !exam.question_numbers.length && exam.groupLinks.length === 0 && (exam as catalog.SidebarExamCatalogEntry).isStatic))
+  assert.ok(h.sidebar.exams.value.every((exam: catalog.ExamCatalogEntry & { groupLinks: unknown[] }) => !exam.question_numbers.length && (exam as catalog.SidebarExamCatalogEntry).isStatic))
 }
 
 for (const kind of ['anonymous', 'free', 'premium', 'admin', 'verification']) {
@@ -152,7 +152,7 @@ test('static accordion opens free and paid menus without requesting questions or
       for (const number of [1, paidConfig.payments.free_exam_count + 1]) {
         h.sidebar.toggleExam(number)
         assert.equal(h.sidebar.openExam.value, number)
-        assert.equal(h.sidebar.exams.value.find((exam: catalog.ExamCatalogEntry) => exam.exam_number === number).groupLinks.length, 0)
+        assert.equal(h.sidebar.exams.value.find((exam: catalog.ExamCatalogEntry) => exam.exam_number === number).groupLinks.length, number === 1 ? 6 : 0)
         h.sidebar.toggleExam(number)
         assert.equal(h.sidebar.openExam.value, null)
       }

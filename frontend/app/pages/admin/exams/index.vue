@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { catalogExamLabel } from '~/utils/examCatalog'
 import type { ExamSet } from '../../../../shared/types/learning'
 import type { ApiResponse } from '~/types/adminQuestion'
 
@@ -23,7 +24,7 @@ const selectedNumber = ref(1)
     <div v-else-if="error" class="admin-panel admin-empty"><div><h2>教材を読み込めませんでした</h2><button class="admin-secondary-button" type="button" @click="() => refresh()">再読み込み</button></div></div>
     <section v-else class="exam-list">
       <article v-for="exam in response?.data ?? []" :key="exam.exam_number" class="admin-panel exam-entry">
-        <div><span class="exam-label">試験 {{ exam.exam_number }}・{{ formatLabel(exam.format_code) }}</span><h2>{{ exam.title || `試験 ${exam.exam_number}` }}</h2><p>{{ exam.groups?.length ?? 0 }}大問・{{ getMasterDataLabel(PUBLICATION_STATUSES, exam.publication_status) }}</p></div><NuxtLink class="admin-secondary-button" :to="`/admin/exams/${exam.exam_number}`">構成を編集<UIcon name="i-lucide-chevron-right" /></NuxtLink>
+        <div><span class="exam-label">試験 {{ exam.exam_number }}・{{ formatLabel(exam.format_code) }}</span><h2>{{ catalogExamLabel(exam.exam_number) }}</h2><p>{{ exam.groups?.length ?? 0 }}大問・{{ getMasterDataLabel(PUBLICATION_STATUSES, exam.publication_status) }}</p></div><NuxtLink class="admin-secondary-button" :to="`/admin/exams/${exam.exam_number}`">構成を編集<UIcon name="i-lucide-chevron-right" /></NuxtLink>
       </article>
       <p v-if="!response?.data.length" class="load-message">登録済みの教材はありません。試験ナンバーを選んで作成してください。</p>
     </section>

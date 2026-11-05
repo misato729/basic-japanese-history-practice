@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { selectReviewPositions } from '~/utils/reviewPositions'
 import type { NitroFetchOptions } from 'nitropack/types'
-import { EXAM_CATALOG, FREE_EXAM_MAX, publishedQuestionNumbers, type ExamCatalogEntry } from '~/utils/examCatalog'
+import { EXAM_CATALOG, FREE_EXAM_MAX, catalogExamLabel, catalogGroupLabel, publishedQuestionNumbers, type ExamCatalogEntry } from '~/utils/examCatalog'
 import type { LearningBlock as ContentBlock, GroupPassage, PassageReference, InputConstraints, SourceReference as StructuredSource } from '../../../../shared/types/learning'
 import { presentExplanationBlocks, presentSources, shortAnswerIssue } from '~/utils/learningPresentation'
 import { essayAnswerIssue, type EssayConstraints } from '~/utils/essayPresentation'
@@ -341,7 +341,7 @@ const completionMessage = computed(() => {
   if (hasConditionSelection.value) {
     return `${selectedPracticeExamNumbers.value.length}件の模擬試験、全${practiceSequence.value.length}問の演習が完了しました。`
   }
-  return `模擬試験 ${examNumber.value} の公開問題をすべて解き終えました。`
+  return `${catalogExamLabel(examNumber.value)}の公開問題をすべて解き終えました。`
 })
 
 const resetAnswer = () => {
@@ -585,7 +585,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', handleFavoriteModalK
 
     <div v-else-if="paywallRequired" class="state-panel paywall-panel">
       <UIcon name="i-lucide-lock-keyhole" />
-      <h1>模擬試験{{ examNumber }}はプレミアム会員向けです</h1>
+      <h1>{{ catalogExamLabel(examNumber) }}はプレミアム会員向けです</h1>
       <p v-if="paywallNeedsLogin">模擬試験{{ FREE_EXAM_MAX + 1 }}以降を利用するには、ログインしてプレミアム会員資格を確認してください。</p>
       <p v-else>{{ PRICE_LABEL }}の買い切りで、模擬試験{{ FREE_EXAM_MAX + 1 }}以降の公開問題を利用できます。</p>
       <div class="state-actions">
@@ -608,12 +608,12 @@ onBeforeUnmount(() => window.removeEventListener('keydown', handleFavoriteModalK
       <header class="practice-head">
         <div>
           <div class="practice-context">
-            <span class="exam-label">模擬試験 {{ examNumber }}</span>
+            <span class="exam-label">{{ catalogExamLabel(examNumber) }}</span>
             <span v-if="isIncorrectReview">間違えた問題を復習中</span>
             <span v-if="practiceProgress" class="practice-progress">{{ practiceProgress }}</span>
           </div>
-          <h1 v-if="displayedGroup"><span class="group-number">大問{{ displayedGroup.group_number }}</span> {{ displayedGroup.title }}</h1>
-          <h1 v-else>模擬試験 {{ examNumber }}</h1>
+          <h1 v-if="displayedGroup">{{ catalogGroupLabel(displayedGroup) }}</h1>
+          <h1 v-else>{{ catalogExamLabel(examNumber) }}</h1>
           <p v-if="selectedSubjectLabel" class="selected-subject">{{ selectedSubjectLabel }}</p>
         </div>
         <div class="practice-meta">
@@ -782,7 +782,6 @@ onBeforeUnmount(() => window.removeEventListener('keydown', handleFavoriteModalK
 .practice-head .exam-label { color: var(--teal); font-size: 0.875rem; font-weight: 800; }
 .practice-progress { padding-left: 12px; border-left: 1px solid var(--line-strong); color: var(--muted); font-size: 0.8125rem; font-weight: 800; }
 .practice-head h1 { margin: 5px 0 0; font-size: 2.25rem; }
-.group-number { white-space: nowrap; }
 .practice-head p { margin: 0; color: var(--muted); }
 .practice-meta { min-width: 0; min-height: 42px; flex: 2 1 0; align-self: stretch; display: flex; align-items: flex-start; justify-content: flex-end; gap: 10px; }
 .practice-head > div { min-width: 0; }

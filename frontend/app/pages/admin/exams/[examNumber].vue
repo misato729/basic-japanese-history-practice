@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { catalogExamLabel } from '~/utils/examCatalog'
 import { getExamFormat } from '../../../../shared/examConfig'
 import type { ExamSet, QuestionGroup, GroupPassage, PassageReference } from '../../../../shared/types/learning'
 import type { AdminQuestion, ApiResponse, ContentBlock, PaginatedApiResponse, AdminQuestionSummary } from '~/types/adminQuestion'
@@ -164,7 +165,7 @@ const excerpt = (blocks: ContentBlock[]) => blocks.map(block => block.text ?? bl
 
 <template>
   <div class="admin-page exam-editor-page">
-    <header class="admin-page-head"><div><h1>教材・大問を編集</h1><p>試験 {{ examNumber }} の構成と共通本文を管理します。</p></div><NuxtLink class="admin-secondary-button" to="/admin/exams">教材一覧</NuxtLink></header>
+    <header class="admin-page-head"><div><h1>教材・大問を編集</h1><p>{{ catalogExamLabel(examNumber) }}の構成と共通本文を管理します。</p></div><NuxtLink class="admin-secondary-button" to="/admin/exams">教材一覧</NuxtLink></header>
     <p v-if="successMessage" class="editor-success" role="status">{{ successMessage }}</p>
     <p v-if="actionError" class="admin-inline-error" role="alert">{{ actionError }}</p>
     <div v-if="status === 'pending'" class="admin-panel admin-loading"><div>教材を読み込んでいます。</div></div>

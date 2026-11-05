@@ -14,10 +14,10 @@ const mockExam = (): ExamCatalogEntry => {
 }
 
 test('mock exam and group labels keep their distinct hierarchy', () => {
-  assert.equal(catalogExamLabel(1), '模擬試験1')
-  assert.equal(catalogExamLabel(2), '模擬試験2')
-  assert.equal(catalogGroupLabel({ group_number: 1, title: ' 知識と情報の記録・伝達 ' }), '大問1 知識と情報の記録・伝達')
-  assert.equal(catalogGroupLabel({ group_number: 2, title: '  ' }), '大問2')
+  assert.equal(catalogExamLabel(1), '模擬試験1（センター）')
+  assert.equal(catalogExamLabel(2), '模擬試験2（歴検2級）')
+  assert.equal(catalogGroupLabel({ group_number: 1, title: ' 知識と情報の記録・伝達 ' }), '知識と情報の記録・伝達')
+  assert.equal(catalogGroupLabel({ group_number: 2, title: '  ' }), '第2問')
 })
 
 test('an eight-question partial exam shows only its one real group', () => {
@@ -68,10 +68,18 @@ test('the active group covers all its public children, not only the starting chi
 })
 
 
-test('new-service static sidebar slots have no inherited groups or publication counts', () => {
+test('static sidebar slots use verified local group entries without claiming publication counts', () => {
   const rows = createSidebarExamCatalog([mockExam()], false, false)
   assert.ok(rows.length > 5)
-  assert.ok(rows.every(row => row.isStatic && row.question_numbers.length === 0 && row.groups?.length === 0))
+  assert.ok(rows.every(row => row.isStatic && row.question_numbers.length === 0))
+  for (const row of rows) {
+    if ([1, 3, 5, 7, 9].includes(row.exam_number)) {
+      assert.equal(row.groups?.length, 6)
+      assert.deepEqual(catalogGroupLinks(row).map(link => link.questionNumber), [1, 7, 13, 19, 25, 29])
+    } else {
+      assert.equal(row.groups?.length, 0)
+    }
+  }
   assert.equal(rows.find(row => row.exam_number === 6)?.access, 'available')
 })
 
@@ -91,7 +99,7 @@ test('free API results keep sparse public groups and append each locked slot onc
     assert.equal(row.isStatic, true)
     assert.equal(row.access, 'paid_membership_required')
     assert.deepEqual(row.question_numbers, [])
-    assert.equal(row.groups?.length, 0)
+    assert.equal(row.groups?.length, [7, 9].includes(row.exam_number) ? 6 : 0)
     assert.ok(catalogGroupLinks(row).every(link => link.to === '/premium'))
   }
   assert.equal(JSON.stringify(source), before)

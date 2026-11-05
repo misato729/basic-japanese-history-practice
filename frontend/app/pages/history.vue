@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { catalogExamLabel } from '~/utils/examCatalog'
 import type { EssayGrade } from '../../shared/types/essay'
 definePageMeta({ middleware: 'auth' })
 
@@ -159,7 +160,7 @@ const startIncorrectReviewFromHistory = async () => {
             </div>
 
             <div class="history-question">
-              <span>模擬試験{{ history.question.exam_number }}・<template v-if="history.question.group_number">大問{{ history.question.group_number }}・</template>問{{ history.question.group_question_number ?? history.question.question_number }}</span>
+              <span>{{ catalogExamLabel(history.question.exam_number) }}・<template v-if="history.question.group_number">大問{{ history.question.group_number }}・</template>問{{ history.question.group_question_number ?? history.question.question_number }}</span>
               <strong>{{ history.question.body_excerpt }}</strong>
               <small>
                 {{ majorCategoryLabel(history.question.major_category_code) }} /
@@ -181,7 +182,7 @@ const startIncorrectReviewFromHistory = async () => {
               <time :datetime="history.answered_at">{{ formatAnsweredAt(history.answered_at) }}</time>
             </div>
             <div class="history-question">
-              <span>模擬試験{{ history.question.exam_number }}・<template v-if="history.question.group_number">大問{{ history.question.group_number }}・</template>問{{ history.question.group_question_number ?? history.question.question_number }}</span>
+              <span>{{ catalogExamLabel(history.question.exam_number) }}・<template v-if="history.question.group_number">大問{{ history.question.group_number }}・</template>問{{ history.question.group_question_number ?? history.question.question_number }}</span>
               <strong>この履歴の本文・正誤・解説はプレミアム会員向けです。</strong>
             </div>
             <NuxtLink v-if="PAYMENTS_ENABLED" class="primary-link" to="/premium">プレミアム会員について確認する</NuxtLink>

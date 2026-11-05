@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { catalogExamLabel } from '~/utils/examCatalog'
 import { achievementLabels } from '../../shared/achievement'
 import type { AchievementQuestion, AchievementStatus } from '../../shared/types/achievement'
 
@@ -19,7 +20,7 @@ const selected = computed(() => allQuestions.value.filter(q => filter.value === 
 const columns = computed(() => Math.max(0, ...report.value?.exams.map(exam => exam.questions.length) ?? []))
 const percent = computed(() => report.value?.total_count ? report.value.answered_count / report.value.total_count * 100 : 0)
 const count = (status: AchievementStatus) => allQuestions.value.filter(q => q.status === status).length
-const questionLabel = (q: AchievementQuestion) => `模擬試験${q.exam_number} ${q.group_number !== null ? `大問${q.group_number} 小問${q.group_question_number}` : `問題${q.question_number}`}`
+const questionLabel = (q: AchievementQuestion) => `${catalogExamLabel(q.exam_number)} ${q.group_number !== null ? `大問${q.group_number} 小問${q.group_question_number}` : `問題${q.question_number}`}`
 const resultLabel = (q: AchievementQuestion) => q.recent_results.length ? `直近から ${q.recent_results.map(value => value === null ? '参考採点' : value ? '正解' : '不正解').join('、')}` : '解答履歴なし'
 const icons: Record<AchievementStatus, string> = { mastered: 'i-lucide-badge-check', correct: 'i-lucide-circle-check', incorrect: 'i-lucide-x', struggling: 'i-lucide-circle-x', unanswered: 'i-lucide-minus', reference: 'i-lucide-notebook-pen' }
 const icon = (status: AchievementStatus) => icons[status]
@@ -61,7 +62,7 @@ const startReview = async () => {
         <p v-if="startError" class="form-error" role="alert">{{ startError }}</p>
         <p id="achievement-table-help" class="report-note">表は模試内の出題順です。各マスから問題を別タブで開けます。スマートフォンでは表を横にスクロールできます。</p>
         <div class="report-table-wrap" role="region" aria-label="問題ごとの達成度一覧" aria-describedby="achievement-table-help" tabindex="0">
-          <table class="report-table"><caption class="sr-only">模擬試験ごとの解答状況。列は模試内の出題順。</caption><thead><tr><th scope="col">模擬試験</th><th v-for="n in columns" :key="n" scope="col">{{ n }}</th></tr></thead><tbody><tr v-for="exam in report.exams" :key="exam.exam_number"><th scope="row">模擬試験{{ exam.exam_number }}</th><td v-for="q in exam.questions" :key="q.id" :class="{ dimmed: filter !== 'all' && filter !== q.status }"><NuxtLink :to="`/practice/${q.exam_number}/${q.question_number}`" target="_blank" rel="noopener" class="achievement-cell" :class="q.status" :aria-label="`${questionLabel(q)}：${achievementLabels[q.status]}。${resultLabel(q)}。別タブで開く`" :title="`${questionLabel(q)}：${resultLabel(q)}`"><UIcon :name="icon(q.status)" /></NuxtLink></td><td v-for="n in columns - exam.questions.length" :key="`empty-${n}`" class="not-present"><span class="sr-only">該当する問題なし</span></td></tr></tbody></table>
+          <table class="report-table"><caption class="sr-only">模擬試験ごとの解答状況。列は模試内の出題順。</caption><thead><tr><th scope="col">模擬試験</th><th v-for="n in columns" :key="n" scope="col">{{ n }}</th></tr></thead><tbody><tr v-for="exam in report.exams" :key="exam.exam_number"><th scope="row">{{ catalogExamLabel(exam.exam_number) }}</th><td v-for="q in exam.questions" :key="q.id" :class="{ dimmed: filter !== 'all' && filter !== q.status }"><NuxtLink :to="`/practice/${q.exam_number}/${q.question_number}`" target="_blank" rel="noopener" class="achievement-cell" :class="q.status" :aria-label="`${questionLabel(q)}：${achievementLabels[q.status]}。${resultLabel(q)}。別タブで開く`" :title="`${questionLabel(q)}：${resultLabel(q)}`"><UIcon :name="icon(q.status)" /></NuxtLink></td><td v-for="n in columns - exam.questions.length" :key="`empty-${n}`" class="not-present"><span class="sr-only">該当する問題なし</span></td></tr></tbody></table>
         </div>
         <ul class="report-legend" aria-label="達成度の凡例"><li v-for="status in statuses" :key="status" :class="status"><UIcon :name="icon(status)" /><span>{{ achievementLabels[status] }}</span></li></ul>
         <p class="report-note">「安定して正解」は直近2回とも正解、「重点的に復習」は直近2回とも不正解です。ほかは直近1回の結果を示します。論述は解答済みとして数え、正誤の4段階には含めません。「未回答」は解答履歴のない問題です。パスしただけの問題も含みます。未回答のマスも問題を開けます。</p>

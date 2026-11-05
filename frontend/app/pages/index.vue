@@ -262,7 +262,7 @@ watch(availableExamNumbers, (examNumbers, previousExamNumbers) => {
             class="exam-card"
             :class="{ 'exam-card-locked': examIsLocked(exam.exam_number) }"
             :to="examTarget(exam)"
-            :aria-label="examIsLocked(exam.exam_number) ? `模擬試験${exam.exam_number}はプレミアム会員向けです` : `模擬試験${exam.exam_number}を始める`"
+            :aria-label="examIsLocked(exam.exam_number) ? `${catalogExamLabel(exam.exam_number)}はプレミアム会員向けです` : `${catalogExamLabel(exam.exam_number)}を始める`"
           >
             <span class="exam-card-copy">
               <strong>{{ catalogExamLabel(exam.exam_number) }}</strong>

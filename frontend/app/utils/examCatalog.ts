@@ -1,5 +1,5 @@
 import { STATIC_EXAM_GROUPS } from './staticExamGroups.ts'
-import { EXAM_CONFIG, type ExamConfiguration } from './examConfig.ts'
+import { EXAM_CONFIG, examTargetName, type ExamConfiguration } from './examConfig.ts'
 
 export type ExamCatalogGroup = { id: number; group_number: number; title: string; question_numbers: number[] }
 
@@ -31,10 +31,13 @@ export const FREE_EXAM_CATALOG = EXAM_CATALOG.filter(exam => exam.exam_number <=
 /** Config defines permitted slots; only the API catalog defines published positions. */
 export const publishedQuestionNumbers = (catalog: readonly ExamCatalogEntry[]) => [...new Set(catalog.flatMap(exam => [...exam.question_numbers]))].sort((a, b) => a - b)
 
-export const catalogExamLabel = (examNumber: number) => `模擬試験${examNumber}`
+export const catalogExamLabel = (examNumber: number) => {
+  const target = examTargetName(examNumber).replace(/(?:試験)?日本史$/u, '')
+  return `模擬試験${examNumber}${target ? `（${target}）` : ''}`
+}
 export const catalogGroupLabel = (group: Pick<ExamCatalogGroup, 'group_number' | 'title'>) => {
   const title = group.title.trim()
-  return `大問${group.group_number}${title ? ` ${title}` : ''}`
+  return title || `第${group.group_number}問`
 }
 export const catalogExamStartNumber = (exam: ExamCatalogEntry) => exam.question_numbers.find(number => Number.isSafeInteger(number) && number > 0)
 
