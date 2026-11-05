@@ -1,10 +1,10 @@
 {
   "schema_version": 1,
-  "revision": 45,
-  "updated_at": "2026-11-05T21:04:12.465Z",
+  "revision": 47,
+  "updated_at": "2026-11-05T21:13:49.347Z",
   "workspace_relative_to_repo": ".",
   "active_context": "operations",
-  "last_checkpoint": "docs/workflow/handoffs/2026-11-05T21-04-12-465Z-r45-center-delivery.json",
+  "last_checkpoint": "docs/workflow/handoffs/2026-11-05T21-13-49-347Z-r47-center-delivery.json",
   "gate_policy": {
     "version": 1,
     "legacy_task_ids": []
@@ -488,15 +488,18 @@
       "id": "center_mocks_03_05_07_09_git_delivery",
       "context": "operations",
       "title": "センター教材のローカル演習対応と既存承認済み変更をcommit/pushする",
-      "status": "doing",
+      "status": "done",
       "depends_on": [
         "center_mocks_03_05_07_09_local_playable"
       ],
       "authorization": "requested",
       "request_ref": "2026-11-06 ユーザー依頼：模試3,5,7,9もDBに登録してローカルで解けるようにし、コミット・push。",
-      "next_action": "index投影の独立監査後にcommit/pushしCIを確認する",
-      "evidence": [],
-      "last_verified_at": null,
+      "next_action": "完了記録を送信しremote一致を確認する",
+      "evidence": [
+        "docs/center-mocks-git-delivery.md",
+        "docs/center-mocks-local-playable.md"
+      ],
+      "last_verified_at": "2026-11-05T21:13:47.115Z",
       "verification_scope": "原典・問題・正答・OCR・秘密値を除外し、既存のセンター作問・見出し対応と今回のアプリ/一般化文書だけを送信。並行する歴検作問の差分は保持し送信しない。",
       "acceptance": [
         {
@@ -504,25 +507,37 @@
           "kind": "automated",
           "description": "対象範囲の全件・保全・反復検査と資料保護検査に合格",
           "verification": "送信対象index監査、資料保護、CI、remote差分0",
-          "status": "pending",
-          "evidence": [],
-          "checked_at": null
+          "status": "passed",
+          "evidence": [
+            "docs/center-mocks-git-delivery.md"
+          ],
+          "checked_at": "2026-11-05T21:13:47.115Z"
         },
         {
           "id": "review",
           "kind": "review",
           "description": "別担当が原稿→保存データとPC/SP操作または送信スコープを独立確認",
           "verification": "別担当がindexを見て並行作業・保護資料の除外を確認",
-          "status": "pending",
-          "evidence": [],
-          "checked_at": null,
-          "reviewer": null
+          "status": "passed",
+          "evidence": [
+            "docs/center-mocks-git-delivery.md"
+          ],
+          "checked_at": "2026-11-05T21:13:47.115Z",
+          "reviewer": "delivery_review"
         }
       ],
       "execution": {
         "worker": "root",
         "max_attempts": 3,
-        "attempts": []
+        "attempts": [
+          {
+            "number": 1,
+            "outcome": "passed",
+            "summary": "承認済み25パスを独立監査し、保護資料と並行作業を除外して通常push。コード67c9cc7のCI全3ジョブ成功、初回remote差分0を確認。",
+            "at": "2026-11-05T21:13:48.009Z",
+            "failed_criteria": []
+          }
+        ]
       }
     }
   ]

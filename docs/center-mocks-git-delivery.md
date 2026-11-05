@@ -16,4 +16,10 @@
 - API回帰124件、画面側254件、型検査、資料保護・進捗管理168件、テンプレート設定検査が成功。
 - `git diff --check` と `node scripts/check-private-sources.mjs` が成功。pre-pushの資料保護を維持し、送信前にindexと全履歴を確認する。
 
-コミット・push・リモート自動検査：実施前。完了後に確定情報を追記する。
+独立したindex監査で25パスの送信範囲を確認し、教材長文・正答・保護資料の混入はなく、修正必須なし。元のcheckpointと並行する歴検作問は手元に保持した。
+
+コードコミット：`67c9cc719ceabbe1b2a4f82bdf7202a247864765`（25ファイル）。既存の非公開origin/mainへ通常pushし、その時点でローカル・リモート差分0を確認した。pre-pushの資料保護検査も成功。
+
+[GitHub Actions](https://github.com/misato729/basic-japanese-history-practice/actions/runs/42109897340) は全3ジョブ成功（harness、verify、netlify-static）。新規環境のAPI回帰、画面側検査・型検査・本番ビルド、静的生成結果を確認した。これはコードコミット `67c9cc7` の検証であり、本番配信は行っていない。
+
+本記録と完了stateは文書だけの後続コミットで送信する。アプリは検査済みコードから変更せず、この記録コミットでは重複したCIとNetlify配信をスキップする。送信後はHEADとorigin/mainの差分0を確認する。並行作業の変更・元のcheckpoint・ローカル専用の登録証拠は作業ツリーに保持する。
