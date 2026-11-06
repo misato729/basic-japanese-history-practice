@@ -16,8 +16,12 @@ const mockExam = (): ExamCatalogEntry => {
 test('mock exam and group labels keep their distinct hierarchy', () => {
   assert.equal(catalogExamLabel(1), '模擬試験1（センター）')
   assert.equal(catalogExamLabel(2), '模擬試験2（歴検2級）')
-  assert.equal(catalogGroupLabel({ group_number: 1, title: ' 知識と情報の記録・伝達 ' }), '知識と情報の記録・伝達')
+  assert.equal(catalogGroupLabel({ group_number: 1, title: ' 知識と情報の記録・伝達 ' }), '第1問　知識と情報の記録・伝達')
+  assert.equal(catalogGroupLabel({ group_number: 5, title: ' 幕末と近代 ' }), '第5問　幕末と近代')
+  assert.equal(catalogGroupLabel({ group_number: 5, title: '第5問　幕末と近代' }), '第5問　幕末と近代')
+  assert.equal(catalogGroupLabel({ group_number: 5, title: '第５問 幕末と近代' }), '第5問　幕末と近代')
   assert.equal(catalogGroupLabel({ group_number: 2, title: '  ' }), '第2問')
+  assert.equal(catalogGroupLabel({ group_number: 2, title: '第2問' }), '第2問')
 })
 
 test('an eight-question partial exam shows only its one real group', () => {
@@ -77,7 +81,8 @@ test('static sidebar slots use verified local group entries without claiming pub
       assert.equal(row.groups?.length, 6)
       assert.deepEqual(catalogGroupLinks(row).map(link => link.questionNumber), [1, 7, 13, 19, 25, 29])
     } else {
-      assert.equal(row.groups?.length, 0)
+      assert.equal(row.groups?.length, 5)
+      assert.deepEqual(catalogGroupLinks(row).map(link => link.questionNumber), [1, 10, 19, 28, 37])
     }
   }
   assert.equal(rows.find(row => row.exam_number === 6)?.access, 'available')
@@ -99,7 +104,7 @@ test('free API results keep sparse public groups and append each locked slot onc
     assert.equal(row.isStatic, true)
     assert.equal(row.access, 'paid_membership_required')
     assert.deepEqual(row.question_numbers, [])
-    assert.equal(row.groups?.length, [7, 9].includes(row.exam_number) ? 6 : 0)
+    assert.equal(row.groups?.length, [7, 9].includes(row.exam_number) ? 6 : 5)
     assert.ok(catalogGroupLinks(row).every(link => link.to === '/premium'))
   }
   assert.equal(JSON.stringify(source), before)

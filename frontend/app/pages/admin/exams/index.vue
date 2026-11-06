@@ -7,7 +7,7 @@ definePageMeta({ layout: 'admin', middleware: 'admin' })
 const { $api: api } = useNuxtApp()
 const { authHeaders } = useAuth()
 const { data: response, status, error, refresh } = await useFetch<ApiResponse<ExamSet[]>>('/api/v1/admin/exams', { $fetch: api, headers: authHeaders, server: false })
-const formatLabels: Record<string, string> = { legacy_practice: '従来の問題演習', group_practice: '単独大問の演習', rekiken_mock: '4大問・30問の模試', center_mock: 'センター形式・6大問36問' }
+const formatLabels: Record<string, string> = { legacy_practice: '従来の問題演習', group_practice: '単独大問の演習', rekiken_mock: '4大問・30問の模試', center_mock: 'センター形式・6大問36問', rekiken2_mock: '歴検2級形式・5大問50問' }
 const formatLabel = (code: string) => formatLabels[code] ?? code
 const availableNumbers = computed(() => Array.from({ length: EXAM_CONFIG.exam.set_count }, (_, index) => index + 1))
 const selectedNumber = ref(1)

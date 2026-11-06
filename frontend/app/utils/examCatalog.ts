@@ -7,7 +7,7 @@ export type ExamCatalogEntry = {
   exam_number: number
   question_numbers: readonly number[]
   title?: string
-  format_code?: 'legacy_practice' | 'group_practice' | 'rekiken_mock' | 'center_mock'
+  format_code?: 'legacy_practice' | 'group_practice' | 'rekiken_mock' | 'center_mock' | 'rekiken2_mock'
   question_count?: number
   published_question_count?: number
   access?: 'available' | 'paid_membership_required'
@@ -36,8 +36,9 @@ export const catalogExamLabel = (examNumber: number) => {
   return `模擬試験${examNumber}${target ? `（${target}）` : ''}`
 }
 export const catalogGroupLabel = (group: Pick<ExamCatalogGroup, 'group_number' | 'title'>) => {
-  const title = group.title.trim()
-  return title || `第${group.group_number}問`
+  const title = group.title.trim().replace(/^第\s*[0-9０-９]+\s*問[\s　]*/u, '')
+  const number = `第${group.group_number}問`
+  return title ? `${number}　${title}` : number
 }
 export const catalogExamStartNumber = (exam: ExamCatalogEntry) => exam.question_numbers.find(number => Number.isSafeInteger(number) && number > 0)
 

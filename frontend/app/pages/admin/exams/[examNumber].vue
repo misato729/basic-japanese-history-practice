@@ -175,7 +175,7 @@ const excerpt = (blocks: ContentBlock[]) => blocks.map(block => block.text ?? bl
         <div class="admin-panel-head"><div><h2>教材の設定</h2><p>未完成の内容を保存するときは、教材全体を非公開にして編集します。</p></div></div>
         <form class="admin-panel-body exam-settings" novalidate @submit.prevent="saveExam">
           <div class="admin-field"><label for="exam-title">教材名</label><input id="exam-title" v-model="exam.title" type="text"></div>
-          <div class="admin-field"><label for="exam-format">教材の構成</label><select id="exam-format" v-model="exam.format_code"><option value="legacy_practice">従来の問題演習</option><option value="group_practice">単独大問（7〜8問）</option><option value="rekiken_mock">模試（4大問・30問）</option><option value="center_mock">センター形式（6大問・36問）</option></select></div>
+          <div class="admin-field"><label for="exam-format">教材の構成</label><select id="exam-format" v-model="exam.format_code"><option value="legacy_practice">従来の問題演習</option><option value="group_practice">単独大問（7〜8問）</option><option value="rekiken_mock">模試（4大問・30問）</option><option value="center_mock">センター形式（6大問・36問）</option><option value="rekiken2_mock">歴検2級形式（5大問・50問）</option></select></div>
           <div class="admin-field"><label for="exam-status">教材の公開状態</label><select id="exam-status" v-model="exam.publication_status"><option value="draft">下書き</option><option value="private">非公開</option><option value="published">公開</option></select></div>
           <button class="admin-primary-button" type="submit" :disabled="busy">教材の設定を保存</button>
         </form>

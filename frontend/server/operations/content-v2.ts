@@ -17,6 +17,7 @@ const status = (value: unknown) => ['draft', 'published', 'private'].includes(St
 const fail = (): never => { throw new OperationError('大問アーカイブの属性・所属・参照・件数を確認してください') }
 const questionKeys = ['exam_number','question_number','major_category_code','category_code','content_blocks','explanation_blocks','source_text','publication_status','choices','is_cultural_history','is_art_history','cultural_history_category','group_id','group_question_number','answer_type','accepted_answers','input_constraints','related_topics','source_references','passage_references','essay_config']
 const blockKeys: Record<string, string[]> = {
+  image:['type','id','src','alt'],
   text:['type','id','text','inlines'],quote:['type','id','text','inlines','source'],fill_in_text:['type','id','text','inlines'],fill_in_quote:['type','id','text','inlines'],
   table:['type','id','headers','rows'],code:['type','id','title','code'],code_group:['type','id','items'],fill_in_choice:['type','id','cells'],
 }
@@ -35,12 +36,12 @@ export function createArchiveV2(input: { exam_sets: unknown; groups: unknown; qu
   if (!Array.isArray(input.exam_sets) || !Array.isArray(input.groups) || !Array.isArray(input.questions)) return fail()
   const setIds = new Set<number>(), groupIds = new Set<number>(), passageGroups = new Map<number, number>(), positions = new Set<string>()
   const sets = input.exam_sets.map(raw => {
-    if (!exact(raw, ['exam_number','title','format_code','publication_status']) || !positive(raw.exam_number) || raw.exam_number > configuration.exam.set_count || typeof raw.title !== 'string' || !raw.title.trim() || !['legacy_practice','group_practice','rekiken_mock','center_mock'].includes(raw.format_code) || !status(raw.publication_status) || setIds.has(raw.exam_number)) return fail()
+    if (!exact(raw, ['exam_number','title','format_code','publication_status']) || !positive(raw.exam_number) || raw.exam_number > configuration.exam.set_count || typeof raw.title !== 'string' || !raw.title.trim() || !['legacy_practice','group_practice','rekiken_mock','center_mock','rekiken2_mock'].includes(raw.format_code) || !status(raw.publication_status) || setIds.has(raw.exam_number)) return fail()
     setIds.add(raw.exam_number); return structuredClone(raw) as ArchiveSet
   })
   const groups = input.groups.map(raw => {
     if (!exact(raw, ['archive_id','exam_number','group_number','title','planned_question_count','publication_status','passages']) || !positive(raw.archive_id) || groupIds.has(raw.archive_id) || !setIds.has(raw.exam_number) || !positive(raw.group_number) || typeof raw.title !== 'string' || !getExamFormat(configuration,sets.find(set=>set.exam_number===raw.exam_number)!.format_code).allowed_group_question_counts.includes(raw.planned_question_count) || !status(raw.publication_status) || !Array.isArray(raw.passages)) return fail()
-    if(raw.group_number>(sets.find(set=>set.exam_number===raw.exam_number)!.format_code==='center_mock'?6:4))return fail()
+    if(raw.group_number>(sets.find(set=>set.exam_number===raw.exam_number)!.format_code==='group_practice'?4:getExamFormat(configuration,sets.find(set=>set.exam_number===raw.exam_number)!.format_code).group_count))return fail()
     const key = `${raw.exam_number}/${raw.group_number}`; if (positions.has(key)) return fail(); positions.add(key); groupIds.add(raw.archive_id)
     const labels = new Set<string>(), orders = new Set<number>()
     const passages = raw.passages.map((passage: unknown) => {
@@ -61,10 +62,12 @@ export function createArchiveV2(input: { exam_sets: unknown; groups: unknown; qu
     }
     if (raw.source_references !== undefined && (!Array.isArray(raw.source_references) || raw.source_references.some((source: unknown) => !only(source,['kind','title','publisher','edition','publication_year','section','locator','url','checked_at'])))) return fail()
     if (raw.essay_config !== undefined && !only(raw.essay_config,['profile_id','profile_version','model_answer','profile_digest'])) return fail()
-    if (raw.input_constraints !== undefined && !only(raw.input_constraints,['script','exact_length','max_length','hint'])) return fail()
+    if (raw.input_constraints !== undefined && !only(raw.input_constraints,['script','exact_length','max_length','hint','ignore_book_brackets'])) return fail()
     for (const [field,keys] of [['related_topics',['major_category_code','category_code']],['passage_references',['passage_id','anchor_id']]] as const) if (raw[field]!==undefined && (!Array.isArray(raw[field]) || raw[field].some((item: unknown)=>!exact(item,[...keys])))) return fail()
     let value: QuestionInput
     try { value = validateQuestionInput(raw) } catch { return fail() }
+    const count=getExamFormat(configuration,sets.find(set=>set.exam_number===value.exam_number)!.format_code).question_count
+    if(count!==undefined&&value.question_number>count)return fail()
     const coordinate = `${value.exam_number}/${value.question_number}`; if (coordinates.has(coordinate)) return fail(); coordinates.add(coordinate)
     if (value.group_id != null) {
       const parent = groups.find(group => group.archive_id === value.group_id)

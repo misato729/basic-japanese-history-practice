@@ -11,6 +11,8 @@ const blankLabels = ['①', '②', '③', '④', '⑤', '⑥']
     <div v-for="(block, index) in blocks" :id="anchorPrefix && block.id ? `${anchorPrefix}-${block.id}` : undefined" :key="`${block.type}-${index}`" class="content-block" :tabindex="anchorPrefix && block.id ? -1 : undefined">
       <p v-if="block.type === 'text'" class="content-text"><QuestionInlineText :text="block.text" :inlines="block.inlines" :anchor-prefix="anchorPrefix" /></p>
 
+      <figure v-else-if="block.type === 'image'" class="question-figure"><img :src="block.src" :alt="block.alt" style="display:block;max-width:100%;height:auto;margin:auto" /></figure>
+
       <blockquote v-else-if="block.type === 'quote'" class="content-quote">
         <p><QuestionInlineText :text="block.text" :inlines="block.inlines" :anchor-prefix="anchorPrefix" /></p>
         <cite v-if="block.source">{{ block.source }}</cite>

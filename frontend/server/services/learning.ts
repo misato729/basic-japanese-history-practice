@@ -106,7 +106,7 @@ export async function answerQuestion(id:number,answer:unknown,user:User|null,db?
   if(q.answer_type==='short_text'){
    if(!q.accepted_answers.length)return notFound()
    if(typeof body.submitted_text!=='string'||!checkTextConstraints(body.submitted_text,q.input_constraints))fail(422,'validation_error','文字種・文字数の入力条件を確認してください',{submitted_text:['入力条件を満たす回答を入力してください']})
-   text=body.submitted_text;isCorrect=q.accepted_answers.some(a=>normalizeAnswerText(a)===normalizeAnswerText(text!))
+   text=body.submitted_text;isCorrect=q.accepted_answers.some(a=>normalizeAnswerText(a,q.input_constraints)===normalizeAnswerText(text!,q.input_constraints))
   }else if(q.answer_type==='essay'){
    const profile=requireCurrentEssayProfile(q.essay_config)
    if(typeof body.submitted_text!=='string'||!body.submitted_text.trim()||body.submitted_text.length>4000||hasUnsupportedEssayCharacters(body.submitted_text))fail(422,'validation_error','論述の回答を4000文字以内で入力してください',{submitted_text:['空でない回答を4000文字以内で入力してください']})

@@ -70,6 +70,20 @@
           4,
           8
         ]
+      },
+      "rekiken2_mock": {
+        "group_count": 5,
+        "question_count": 50,
+        "allowed_group_question_counts": [
+          10
+        ],
+        "group_question_counts": [
+          10,
+          10,
+          10,
+          10,
+          10
+        ]
       }
     },
     "numbering": {

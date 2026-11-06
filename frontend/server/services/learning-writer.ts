@@ -93,8 +93,10 @@ export async function saveQuestion(raw:QuestionInput,options:SaveOptions={}):Pro
   await query('DELETE FROM question_topic_links WHERE question_id=$1',[id],db)
   const topics=[{major_category_code:input.major_category_code,category_code:input.category_code},...input.related_topics]
   for(const t of topics)await query('INSERT INTO question_topic_links(question_id,major_category_code,category_code) VALUES($1,$2,$3) ON CONFLICT DO NOTHING',[id,t.major_category_code,t.category_code],db)
-  await query('DELETE FROM question_passage_references WHERE question_id=$1',[id],db)
-  for(const r of input.passage_references)await query('INSERT INTO question_passage_references(question_id,passage_id,anchor_id) VALUES($1,$2,$3)',[id,r.passage_id,r.anchor_id],db)
+  if(!before||JSON.stringify(canonical(before.passage_references))!==JSON.stringify(canonical(input.passage_references))){
+   await query('DELETE FROM question_passage_references WHERE question_id=$1',[id],db)
+   for(const r of input.passage_references)await query('INSERT INTO question_passage_references(question_id,passage_id,anchor_id) VALUES($1,$2,$3)',[id,r.passage_id,r.anchor_id],db)
+  }
   await finishLegacyPublication(input,db,config,options.requireCompleteExam===true)
   if(options.requireCompleteExam!==false)await assertPublishedSet(input.exam_number,db,config)
   if(before&&before.exam_number!==input.exam_number&&options.requireCompleteExam!==false)await assertPublishedSet(before.exam_number,db,config)

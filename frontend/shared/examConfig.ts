@@ -50,10 +50,12 @@ export const parseExamConfig = (input: unknown): ExamConfiguration => {
   if (config.exam.formats !== undefined) {
     requireValue(config.exam.formats && typeof config.exam.formats === 'object' && !Array.isArray(config.exam.formats), 'formats must be an object')
     for (const [code, rules] of Object.entries(config.exam.formats)) {
-      requireValue(['group_practice', 'rekiken_mock', 'center_mock'].includes(code), 'unsupported exam format')
+      requireValue(['group_practice', 'rekiken_mock', 'center_mock', 'rekiken2_mock'].includes(code), 'unsupported exam format')
       requireValue(rules && positive(rules.group_count) && Array.isArray(rules.allowed_group_question_counts), 'invalid group rules')
       if (code === 'center_mock') {
         requireValue(rules.group_count === 6 && rules.question_count === 36 && JSON.stringify(rules.allowed_group_question_counts) === '[4,6,8]' && JSON.stringify(rules.group_question_counts) === '[6,6,6,6,4,8]', 'invalid center exam structure')
+      } else if (code === 'rekiken2_mock') {
+        requireValue(rules.group_count === 5 && rules.question_count === 50 && JSON.stringify(rules.allowed_group_question_counts) === '[10]' && JSON.stringify(rules.group_question_counts) === '[10,10,10,10,10]', 'invalid rekiken2 exam structure')
       } else {
         requireValue(rules.allowed_group_question_counts.length === 2 && new Set(rules.allowed_group_question_counts).size === 2 && rules.allowed_group_question_counts.every(count => count === 7 || count === 8) && rules.group_question_counts === undefined, 'group formats require seven or eight questions')
         requireValue(code === 'group_practice' ? rules.group_count === 1 && rules.question_count === undefined : rules.group_count === 4 && rules.question_count === 30, 'invalid grouped exam structure')
@@ -82,6 +84,7 @@ export function getExamFormat(config: ExamConfiguration, code: string): ExamForm
   if (code === 'group_practice') return config.exam.formats?.group_practice ?? { group_count: 1, allowed_group_question_counts: [7, 8] }
   if (code === 'rekiken_mock') return config.exam.formats?.rekiken_mock ?? { group_count: 4, question_count: 30, allowed_group_question_counts: [7, 8] }
   if (code === 'center_mock') return config.exam.formats?.center_mock ?? { group_count: 6, question_count: 36, allowed_group_question_counts: [4, 6, 8], group_question_counts: [6, 6, 6, 6, 4, 8] }
+  if (code === 'rekiken2_mock') return config.exam.formats?.rekiken2_mock ?? { group_count: 5, question_count: 50, allowed_group_question_counts: [10], group_question_counts: [10,10,10,10,10] }
   throw new Error('Unsupported exam format')
 }
 export const SITE = EXAM_CONFIG.site

@@ -1,10 +1,10 @@
 {
   "schema_version": 1,
-  "revision": 47,
-  "updated_at": "2026-11-05T21:13:49.347Z",
+  "revision": 70,
+  "updated_at": "2026-11-06T05:28:37.920Z",
   "workspace_relative_to_repo": ".",
   "active_context": "operations",
-  "last_checkpoint": "docs/workflow/handoffs/2026-11-05T21-13-49-347Z-r47-center-delivery.json",
+  "last_checkpoint": "docs/workflow/handoffs/2026-11-06T05-28-37-920Z-r70.json",
   "gate_policy": {
     "version": 1,
     "legacy_task_ids": []
@@ -51,7 +51,10 @@
     "docs/verification.md",
     "docs/bootstrap-review.md",
     "docs/center-authoring.md",
-    "docs/authoring-status.md"
+    "docs/authoring-status.md",
+    "docs/rekiken-authoring.md",
+    "docs/rekiken-mock-02-authoring-review.md",
+    "docs/rekiken-mock-02-difficulty-review.md"
   ],
   "tasks": [
     {
@@ -375,6 +378,45 @@
       }
     },
     {
+      "id": "rekiken_mocks_04_06_08_10_authoring",
+      "context": "product",
+      "title": "教科書中心で歴検2級向け模試4・6・8・10を作成する",
+      "status": "waiting_for_request",
+      "depends_on": [],
+      "authorization": "not_requested",
+      "request_ref": "2026-11-05 ユーザー依頼：模試1の難度を承認。用語集の細部より教科書記述を主参照とし、模試4,6,8,10を作成。",
+      "next_action": "2026-11-05の訂正により今回の対象外。途中草稿を保管し、歴検用の作問再開は別途依頼を待つ。",
+      "evidence": [],
+      "last_verified_at": null,
+      "verification_scope": "教材作成とMarkdown納品。全肢・解説の原典照合、独立解答・横断重複検査を行う。DB登録・公開・Git送信はこの新規作問タスクへ含めない。",
+      "acceptance": [
+        {
+          "id": "checks",
+          "kind": "automated",
+          "description": "依頼された変更範囲の検査が成功する",
+          "verification": "対象に必要な既存検査を選び、結果と根拠を記録する",
+          "status": "pending",
+          "evidence": [],
+          "checked_at": null
+        },
+        {
+          "id": "review",
+          "kind": "review",
+          "description": "実装担当以外が受入条件と成果物を確認する",
+          "verification": "別担当のレビューで未解決の問題がないことを確認する",
+          "status": "pending",
+          "evidence": [],
+          "checked_at": null,
+          "reviewer": null
+        }
+      ],
+      "execution": {
+        "worker": "root",
+        "max_attempts": 3,
+        "attempts": []
+      }
+    },
+    {
       "id": "center_mocks_03_05_07_09_authoring",
       "context": "product",
       "title": "教科書本文中心でセンター予想の模試3・5・7・9を作成する",
@@ -424,6 +466,248 @@
             "outcome": "passed",
             "summary": "センター予想4セット144問576肢の原典照合・独立レビューと12Markdown全件照合、資料保護検査が合格。重複回避9問も追加独立解答と原典確認を完了。",
             "at": "2026-11-05T04:28:15.881Z",
+            "failed_criteria": []
+          }
+        ]
+      }
+    },
+    {
+      "id": "rekiken_mock_02_authoring",
+      "context": "product",
+      "title": "歴検2級の過去問を参考に語句記述を含む模試2を作成する",
+      "status": "done",
+      "depends_on": [],
+      "authorization": "requested",
+      "request_ref": "2026-11-05 ユーザー依頼: past-exam/歴検2級 の過去問を参考に模試2を作成。追加回答で語句記述を含めることを選択。模試1の難度・教科書本文中心の方針を継続。",
+      "next_action": "成果物をユーザーへ渡す。DB登録や公開は追加依頼を待つ",
+      "evidence": [
+        "docs/rekiken-mock-02-authoring-review.md",
+        "docs/rekiken-authoring.md"
+      ],
+      "last_verified_at": "2026-11-05T14:08:43.212Z",
+      "verification_scope": "2026-11-05実施。過去問2回分18頁を観察。5大問50問（四択45・語句記述5）と4Markdownを作成。全50問の独立解答一致、180肢説明と5記述の原典照合、改稿再判定、完成セット横断37項目と全件構造・資料保護・差分検査に合格。分野配分・部分的補助情報・図版/未知史料と実測の限界を記録。DB/UI/自動採点登録・Git送信・公開は未実施。",
+      "acceptance": [
+        {
+          "id": "checks",
+          "kind": "automated",
+          "description": "過去問に基づく構成・問数・選択記述内訳・配点・参照・原稿構造と資料保護を満たす",
+          "verification": "専用全件検査、Markdownと保存データ照合、git diff --check、node scripts/check-private-sources.mjs",
+          "status": "passed",
+          "evidence": [
+            "docs/rekiken-mock-02-authoring-review.md"
+          ],
+          "checked_at": "2026-11-05T14:08:43.212Z"
+        },
+        {
+          "id": "review",
+          "kind": "review",
+          "description": "作者以外が全問を独立解答し、全肢・語句記述の表記・原典根拠・最短経路・他問ヒントを検証する",
+          "verification": "独立解答を先に保存し、解答と原典画像を照合。代表大問と完成セットを段階的に確認。",
+          "status": "passed",
+          "evidence": [
+            "docs/rekiken-mock-02-authoring-review.md"
+          ],
+          "checked_at": "2026-11-05T14:08:43.212Z",
+          "reviewer": "calibration_reviewer / past_exam_format / calibration_author（大問ごと作者以外が独立解答・原典確認、rootの独立確認も含む）"
+        }
+      ],
+      "execution": {
+        "worker": "root",
+        "max_attempts": 3,
+        "attempts": [
+          {
+            "number": 1,
+            "outcome": "passed",
+            "summary": "模試2の4Markdown、全50問の独立解答、原典全肢照合、改稿再判定、横断37項目と構造・資料保護検査を確認。配分と実測の限界を記録した。",
+            "at": "2026-11-05T14:08:43.414Z",
+            "failed_criteria": []
+          }
+        ]
+      }
+    },
+    {
+      "id": "rekiken_mock_02_difficulty_audit",
+      "context": "product",
+      "title": "用語集の掲載冊数と最短解法から過去問と模試2の難度を比較検証する",
+      "status": "done",
+      "depends_on": [
+        "rekiken_mock_02_authoring"
+      ],
+      "authorization": "requested",
+      "request_ref": "2026-11-05 ユーザー依頼: 日本史用語集の数字などで過去問を分析し、模試2の難易度の適切性を検証。repo直下の日本史用語集.pdfを指定。",
+      "next_action": "難度検証レポートをユーザーへ渡す。原稿改稿・登録・公開は別の追加依頼を待つ",
+      "evidence": [
+        "docs/rekiken-mock-02-difficulty-review.md",
+        "docs/rekiken-authoring.md"
+      ],
+      "last_verified_at": "2026-11-05T15:31:31.730Z",
+      "verification_scope": "2026-11-05〜06実施。過去問100問と模試2の50問を最短解法で監査。用語集334頁のローカル検索索引を作り、対象語延べ291件中274件の見出し数字を直接画像確認、17件は理由付きnull。記述15件、12問の経路・12語の数字の再判定、全件構造と資料追跡保護・差分検査、別担当の比較結論レビューを完了。模試1全件再査定・正答率実測は未実施。語句を含むログ表示の逸脱を記録し、以後は数値項目へ限定。教材4MD/作成データ5件は変更なし。DB/UI/公開/Git送信は未実施。",
+      "acceptance": [
+        {
+          "id": "checks",
+          "kind": "automated",
+          "description": "過去問100問・模試2の50問の監査記録と用語集の原画像確認根拠、比較集計・未確認を全件検査する",
+          "verification": "専用の件数/番号/根拠/集計照合、資料保護、git diff --check",
+          "status": "passed",
+          "evidence": [
+            "docs/rekiken-mock-02-difficulty-review.md"
+          ],
+          "checked_at": "2026-11-05T15:31:31.730Z"
+        },
+        {
+          "id": "review",
+          "kind": "review",
+          "description": "担当間で評価基準を合わせ、難語の露出でなく最短解答経路に基づく比較結論を独立再判定する",
+          "verification": "原問の画像・候補数・用語集見出し数字の確認、根拠と結論の別担当レビュー",
+          "status": "passed",
+          "evidence": [
+            "docs/rekiken-mock-02-difficulty-review.md"
+          ],
+          "checked_at": "2026-11-05T15:31:31.730Z",
+          "reviewer": "difficulty_mock_02（比較結論・全集計・過去問記述10語を独立再確認、rootによる12経路/12語の再判定を含む）"
+        }
+      ],
+      "execution": {
+        "worker": "root",
+        "max_attempts": 3,
+        "attempts": [
+          {
+            "number": 1,
+            "outcome": "passed",
+            "summary": "全150問の解法監査、274件の数字原画像確認と17件の理由付き空欄、記述15件と比較集計・独立結論レビューを確認。未実測・抽出粒度差・ログ表示逸脱も記録した。教材は変更なし。",
+            "at": "2026-11-05T15:31:32.529Z",
+            "failed_criteria": []
+          }
+        ]
+      }
+    },
+    {
+      "id": "rekiken_mock_02_revision",
+      "context": "product",
+      "title": "難度監査の改善方針に基づき模試2を改稿する",
+      "status": "done",
+      "depends_on": [
+        "rekiken_mock_02_difficulty_audit"
+      ],
+      "authorization": "requested",
+      "request_ref": "2026-11-06 ユーザー依頼: 改善方針に基づいて修正。誤肢4問・地図/平面図3問・文化史と戦後配分の調整を実施し、50問・四択45+語句記述5を維持。",
+      "next_action": "追加依頼を待つ。登録・画面追加・Git送信・公開は未実施",
+      "evidence": [
+        "docs/rekiken-mock-02-revision-review.md"
+      ],
+      "last_verified_at": "2026-11-05T18:31:49.626Z",
+      "verification_scope": "ローカル原稿11問と図3点を改稿。4MD・50問全体の参照とヒントを再確認、変更44肢を原典照合、未変更39問は同一データと旧検証を照合して継承。ブラウザ全体組版/アプリUI・DB登録・公開・Git送信・実測難度比較は未実施。旧稿/旧監査を保持。",
+      "acceptance": [
+        {
+          "id": "checks",
+          "kind": "automated",
+          "description": "50問45四択5記述100点、11問と3図の変更、参照/出力の全件対応と旧稿保持、資料保護を検査する",
+          "verification": "改稿専用構造・差分検査、本文と画像の存在/数、git diff --check、node scripts/check-private-sources.mjs",
+          "status": "passed",
+          "evidence": [
+            "docs/rekiken-mock-02-revision-review.md"
+          ],
+          "checked_at": "2026-11-05T18:31:49.626Z"
+        },
+        {
+          "id": "review",
+          "kind": "review",
+          "description": "改稿11問の作者以外による先行解答固定、全肢原典確認、図版の位置と最短経路、全セット情報供給と4MD表示を検証する",
+          "verification": "代表案の品質合わせ、改稿問題の独立解答と原典/図版の照合、保存後の画像/Markdown表示確認、全50問の参照・記述露出点検",
+          "status": "passed",
+          "evidence": [
+            "docs/rekiken-mock-02-revision-review.md"
+          ],
+          "checked_at": "2026-11-05T18:31:49.626Z",
+          "reviewer": "revision_final_review / revise_coverage / revise_distractors"
+        }
+      ],
+      "execution": {
+        "worker": "root",
+        "max_attempts": 3,
+        "attempts": [
+          {
+            "number": 1,
+            "outcome": "passed",
+            "summary": "模試2の11問と図3点を改稿し、変更全肢の原典照合・独立解答一致・全50問と4MDの対応・資料保護を確認した",
+            "at": "2026-11-05T18:31:50.328Z",
+            "failed_criteria": []
+          }
+        ]
+      }
+    },
+    {
+      "id": "rekiken_mocks_04_06_08_10_authoring_20261106",
+      "context": "product",
+      "title": "模試2の改稿基準で歴検型模試4・6・8・10を作成する",
+      "status": "done",
+      "depends_on": [
+        "rekiken_mock_02_revision"
+      ],
+      "authorization": "requested",
+      "request_ref": "2026-11-06 ユーザー依頼: 模試2の改稿を承認し、同じ流れで模試4,6,8,10も作成。旧キャンセル草稿とは新規タスクを分ける。",
+      "next_action": "追加依頼を待つ",
+      "evidence": [
+        "docs/rekiken-mocks-04-06-08-10-authoring-review.md",
+        "local-only/rekiken-mocks-04-06-08-10-20261106/review/final-automated-check.json",
+        "local-only/rekiken-mocks-04-06-08-10-20261106/review/final-workspace-checks.json",
+        "local-only/rekiken-mocks-04-06-08-10-20261106/review/completion-summary.json",
+        "local-only/rekiken-mocks-04-06-08-10-20261106/set-04/review/independent-review-final.json",
+        "local-only/rekiken-mocks-04-06-08-10-20261106/set-06/review/root-independent-review.json",
+        "local-only/rekiken-mocks-04-06-08-10-20261106/set-08/review/independent-06-review.json",
+        "local-only/rekiken-mocks-04-06-08-10-20261106/set-10/review/independent-review-final.json",
+        "local-only/rekiken-mocks-04-06-08-10-20261106/review/markdown-independent-04.json",
+        "local-only/rekiken-mocks-04-06-08-10-20261106/review/cross-set-resolution-final.md",
+        "local-only/rekiken-mocks-04-06-08-10-20261106/review/glossary-frequency-manifest.json",
+        "local-only/rekiken-mocks-04-06-08-10-20261106/review/final-summary-independent-04.json",
+        "local-only/rekiken-mocks-04-06-08-10-20261106/review/process-output-exception.md"
+      ],
+      "last_verified_at": "2026-11-05T21:32:53.211Z",
+      "verification_scope": "4セット計200問・720肢と全解説・20記述・12図・16Markdown。原画像全件照合、初回独立解答と改稿問再解答、最短解法、選定語284記録中278の見出し数字/6理由付未確定、意味上の重複調整、全原稿対応とdigest・資料保護。受験者の実測難度、DB/UI/公開/Git送信は対象外。 補助記録の内部出力例外と出力方法の是正は独立したローカル記録に保存。",
+      "acceptance": [
+        {
+          "id": "checks",
+          "kind": "automated",
+          "description": "4セット200問・720肢・20記述、16MD、各図3点、参照/配点/標準解答露出/セット間重複/資料保護を検査する",
+          "verification": "ローカル生成検査、全件構造/対応と図参照、差分と資料保護、固定した最終digest",
+          "status": "passed",
+          "evidence": [
+            "docs/rekiken-mocks-04-06-08-10-authoring-review.md",
+            "local-only/rekiken-mocks-04-06-08-10-20261106/review/final-automated-check.json",
+            "local-only/rekiken-mocks-04-06-08-10-20261106/review/final-workspace-checks.json",
+            "local-only/rekiken-mocks-04-06-08-10-20261106/review/completion-summary.json"
+          ],
+          "checked_at": "2026-11-05T21:31:03.722Z"
+        },
+        {
+          "id": "review",
+          "kind": "review",
+          "description": "代表大問の基準確認後、200問の独立解答と最短経路、全720肢・記述20問の原典、図12点と情報供給・主知識重複を確認する",
+          "verification": "問題面だけで解答を固定、原画像を直接照合、掲載数は該当見出しで確認、改稿後は担当外の再判定、全体横断の独立レビュー",
+          "status": "passed",
+          "evidence": [
+            "local-only/rekiken-mocks-04-06-08-10-20261106/set-04/review/independent-review-final.json",
+            "local-only/rekiken-mocks-04-06-08-10-20261106/set-06/review/root-independent-review.json",
+            "local-only/rekiken-mocks-04-06-08-10-20261106/set-08/review/independent-06-review.json",
+            "local-only/rekiken-mocks-04-06-08-10-20261106/set-10/review/independent-review-final.json",
+            "local-only/rekiken-mocks-04-06-08-10-20261106/review/markdown-independent-04.json",
+            "local-only/rekiken-mocks-04-06-08-10-20261106/review/cross-set-resolution-final.md",
+            "local-only/rekiken-mocks-04-06-08-10-20261106/review/glossary-frequency-manifest.json",
+            "local-only/rekiken-mocks-04-06-08-10-20261106/review/final-summary-independent-04.json"
+          ],
+          "checked_at": "2026-11-05T21:31:03.722Z",
+          "reviewer": "author_mock_04 / author_mock_06 / author_mock_08; root reviews only other authors in the individual reports"
+        }
+      ],
+      "execution": {
+        "worker": "root",
+        "max_attempts": 3,
+        "attempts": [
+          {
+            "number": 1,
+            "outcome": "passed",
+            "summary": "4セット200問・720肢と全解説・記述20問・図12点・16Markdownを全件確認。初回独立解答と改稿後再解答、原画像照合、選定語の見出し数字・最短解法、横断重複調整、完成原稿対応・資料保護を完了。DB・UI・外部送信は未実施。",
+            "at": "2026-11-05T21:31:03.919Z",
             "failed_criteria": []
           }
         ]
@@ -535,6 +819,576 @@
             "outcome": "passed",
             "summary": "承認済み25パスを独立監査し、保護資料と並行作業を除外して通常push。コード67c9cc7のCI全3ジョブ成功、初回remote差分0を確認。",
             "at": "2026-11-05T21:13:48.009Z",
+            "failed_criteria": []
+          }
+        ]
+      }
+    },
+    {
+      "id": "restore_numbered_group_headings",
+      "context": "development",
+      "title": "欠けている第n問を大問見出しとメニューへ統一表示する",
+      "status": "done",
+      "depends_on": [],
+      "authorization": "requested",
+      "request_ref": "2026-11-06 ユーザー指摘：途中から第n問という表記が抜けているので確認。",
+      "next_action": "追加依頼を待つ",
+      "evidence": [
+        "docs/numbered-group-headings.md"
+      ],
+      "last_verified_at": "2026-11-05T21:35:10.467Z",
+      "verification_scope": "公開5教材30大問の番号表記を調査し、共通の表示処理だけを修正。DB・問題本文・履歴・公開状態は維持。現ローカルで確認し、Git送信・外部公開は対象外。",
+      "acceptance": [
+        {
+          "id": "checks",
+          "kind": "automated",
+          "description": "全30大問で第n問が一度だけ付き、関連検査・型・資料保護が通る",
+          "verification": "既存の見出し/メニュー検査、実30大問の全件表示値照合、差分・資料保護検査",
+          "status": "passed",
+          "evidence": [
+            "docs/numbered-group-headings.md"
+          ],
+          "checked_at": "2026-11-05T21:35:10.467Z"
+        },
+        {
+          "id": "review",
+          "kind": "review",
+          "description": "別担当のレビューとPC/SP実操作で見出し・メニューの番号と移動を確認",
+          "verification": "欠落再現の実画面、修正後の番号と重複なし、サイドバーリンクと移動、表示幅確認",
+          "status": "passed",
+          "evidence": [
+            "docs/numbered-group-headings.md"
+          ],
+          "checked_at": "2026-11-05T21:35:10.467Z",
+          "reviewer": "registration_review"
+        }
+      ],
+      "execution": {
+        "worker": "root",
+        "max_attempts": 3,
+        "attempts": [
+          {
+            "number": 1,
+            "outcome": "passed",
+            "summary": "共通見出しで構造番号を一度だけ補完。全30件独立検査、15件と型、PC/SP計60見出し・メニュー・移動、資料保護検査が合格。DBと本文は維持。",
+            "at": "2026-11-05T21:35:11.100Z",
+            "failed_criteria": []
+          }
+        ]
+      }
+    },
+    {
+      "id": "rekiken_even_local_playable",
+      "context": "operations",
+      "title": "歴検型模試2・4・6・8・10をローカル登録し解答可能にする",
+      "status": "done",
+      "depends_on": [
+        "rekiken_mock_02_revision",
+        "rekiken_mocks_04_06_08_10_authoring_20261106"
+      ],
+      "authorization": "requested",
+      "request_ref": "2026-11-06 ユーザー依頼：模試2・4・6・8・10をローカルDBに登録し画面で解答可能にする。追加指定：歴検型は大問ごとの小問1〜10（共通本文・メニューも統一）。",
+      "next_action": "追加依頼を待つ",
+      "evidence": [
+        "docs/rekiken-local-playable.md",
+        "local-only/rekiken-registration-20261106/final-verification.json",
+        "local-only/rekiken-registration-20261106/repeat-complete.json",
+        "local-only/rekiken-registration-20261106/http-complete.json",
+        "local-only/rekiken-registration-20261106/review-independent-04.json",
+        "local-only/rekiken-registration-20261106/ui-review.json"
+      ],
+      "last_verified_at": "2026-11-05T22:05:20.012Z",
+      "verification_scope": "5セット250問・900肢・25記述・25大問・15図の原稿対応/保存後再読込/無変更反復/各transaction対象外保持、独立250GET非露出、127合成API/254画面検査/型検査、PCスマホ図表示と四択・記述回答・局所番号/大問移動。章節/文化史は未分類。実教材UIは匿名。外部公開なし。",
+      "acceptance": [
+        {
+          "id": "checks",
+          "kind": "automated",
+          "description": "形式・登録再読込・反復・対象外保持・非露出・回答・資料保護",
+          "verification": "既存検査と全件登録照合",
+          "status": "passed",
+          "evidence": [
+            "docs/rekiken-local-playable.md",
+            "local-only/rekiken-registration-20261106/final-verification.json",
+            "local-only/rekiken-registration-20261106/repeat-complete.json",
+            "local-only/rekiken-registration-20261106/http-complete.json"
+          ],
+          "checked_at": "2026-11-05T22:05:20.012Z"
+        },
+        {
+          "id": "review",
+          "kind": "review",
+          "description": "独立照合、PCスマホ表示と選択・記述回答",
+          "verification": "別担当と実UI操作",
+          "status": "passed",
+          "evidence": [
+            "local-only/rekiken-registration-20261106/review-independent-04.json",
+            "local-only/rekiken-registration-20261106/ui-review.json"
+          ],
+          "checked_at": "2026-11-05T22:05:20.012Z",
+          "reviewer": "author_mock_04; root performs actual UI operations"
+        }
+      ],
+      "execution": {
+        "worker": "root",
+        "max_attempts": 3,
+        "attempts": [
+          {
+            "number": 1,
+            "outcome": "passed",
+            "summary": "歴検型5セット250問・900肢・25記述・15図を専用ローカルDBへ登録。大問ごとの小問1〜10と本文参照を統一。全件再読込・反復無変更・対象外保全・独立250GET・127API/254画面検査/型検査・PCスマホ実操作を確認。未分類と匿名操作の限界を記録。",
+            "at": "2026-11-05T22:05:25.707Z",
+            "failed_criteria": []
+          }
+        ]
+      }
+    },
+    {
+      "id": "rekiken_even_classification",
+      "context": "operations",
+      "title": "歴検型5セット250問へ章節と文化史分類を設定する",
+      "status": "done",
+      "depends_on": [
+        "rekiken_even_local_playable"
+      ],
+      "authorization": "requested",
+      "request_ref": "2026-11-06 ユーザー依頼：模試2・4・6・8・10の章節と文化史分類を設定",
+      "next_action": "追加依頼を待つ",
+      "evidence": [
+        "docs/rekiken-classification.md",
+        "local-only/rekiken-registration-20261106/classification/final-verification.json",
+        "local-only/rekiken-registration-20261106/classification/apply-final.json",
+        "local-only/rekiken-registration-20261106/classification/repeat-final.json",
+        "local-only/rekiken-registration-20261106/classification/filter-result.json",
+        "local-only/rekiken-registration-20261106/classification/writer-regression.log",
+        "local-only/rekiken-registration-20261106/classification/typecheck.log",
+        "local-only/rekiken-registration-20261106/classification/review-04.json",
+        "local-only/rekiken-registration-20261106/classification/review-04-writer.json",
+        "local-only/rekiken-registration-20261106/classification/ui-review.json",
+        "local-only/rekiken-registration-20261106/classification/分類一覧.md"
+      ],
+      "last_verified_at": "2026-11-05T22:40:14.063Z",
+      "verification_scope": "250問の主分類、関連節6問、文化47問（美術12/音楽5/文学5/その他25）。独立全件判定と確定表照合、Writer保存後再読込・反復0・問題/選択肢/参照行ID/内容版/履歴/お気に入り/対象外保持、23合成回帰・型検査、106条件APIと250表示分類、PC/スマホ条件演習を確認。独立Writerレビューはコードと合成比較、DB統合検証はroot実施。ローカルのみ。",
+      "acceptance": [
+        {
+          "id": "checks",
+          "kind": "automated",
+          "description": "250問の正規分類・全件再読込・反復無変更・対象外/教材/履歴保持・APIの条件一致",
+          "verification": "Writerのトランザクション、digestと全件照合、末尾_test合成検査",
+          "status": "passed",
+          "evidence": [
+            "docs/rekiken-classification.md",
+            "local-only/rekiken-registration-20261106/classification/final-verification.json",
+            "local-only/rekiken-registration-20261106/classification/apply-final.json",
+            "local-only/rekiken-registration-20261106/classification/repeat-final.json",
+            "local-only/rekiken-registration-20261106/classification/filter-result.json",
+            "local-only/rekiken-registration-20261106/classification/writer-regression.log",
+            "local-only/rekiken-registration-20261106/classification/typecheck.log"
+          ],
+          "checked_at": "2026-11-05T22:40:14.063Z"
+        },
+        {
+          "id": "review",
+          "kind": "review",
+          "description": "主知識・関連節・文化史内訳の独立全件確認とPC/スマホの分類演習",
+          "verification": "原稿と分類対応表の独立照合、実UI操作",
+          "status": "passed",
+          "evidence": [
+            "local-only/rekiken-registration-20261106/classification/review-04.json",
+            "local-only/rekiken-registration-20261106/classification/review-04-writer.json",
+            "local-only/rekiken-registration-20261106/classification/ui-review.json",
+            "local-only/rekiken-registration-20261106/classification/分類一覧.md"
+          ],
+          "checked_at": "2026-11-05T22:40:14.063Z",
+          "reviewer": "author_mock_04 (classification and code); root (actual DB and PC/mobile UI)"
+        }
+      ],
+      "execution": {
+        "worker": "root",
+        "max_attempts": 3,
+        "attempts": [
+          {
+            "number": 1,
+            "outcome": "passed",
+            "summary": "歴検型250問の章節・関連節と文化47問の単一内訳を独立確認しローカル保存。参照行保持のWriter修正は23回帰・型検査・独立コードレビューに合格。保存再読込・反復0・教材/参照ID/版/履歴保持、106条件API・250分類表示、PCスマホ条件演習を確認。",
+            "at": "2026-11-05T22:40:14.844Z",
+            "failed_criteria": []
+          }
+        ]
+      }
+    },
+    {
+      "id": "remove_duplicate_practice_labels",
+      "context": "development",
+      "title": "共通本文の重複見出しと奇数模試の番号配点行を非表示にする",
+      "status": "done",
+      "depends_on": [],
+      "authorization": "requested",
+      "request_ref": "2026-11-06 ユーザー依頼：全模試の共通本文ラベルと奇数模試の設問番号配点の重複をローカルで削除",
+      "next_action": "追加依頼を待つ",
+      "evidence": [
+        "docs/duplicate-practice-labels.md",
+        "docs/duplicate-practice-labels-review.md"
+      ],
+      "last_verified_at": "2026-11-06T04:24:34.213Z",
+      "verification_scope": "全10模試。DB変更なし。",
+      "acceptance": [
+        {
+          "id": "checks",
+          "kind": "automated",
+          "description": "全10模試の共通本文ラベルと奇数模試の番号配点行だけを非表示にし本文・偶数・参照を保持",
+          "verification": "全430問・66資料の構造照合、表示関連11検査、型検査、PC/SP操作、資料保護と差分検査",
+          "status": "passed",
+          "evidence": [
+            "docs/duplicate-practice-labels.md"
+          ],
+          "checked_at": "2026-11-06T04:22:51.915Z"
+        },
+        {
+          "id": "review",
+          "kind": "review",
+          "description": "実装担当以外が受入条件と成果物を確認する",
+          "verification": "別担当のレビューで未解決の問題がないことを確認する",
+          "status": "passed",
+          "evidence": [
+            "docs/duplicate-practice-labels-review.md"
+          ],
+          "checked_at": "2026-11-06T04:24:34.213Z",
+          "reviewer": "author_mock_04"
+        }
+      ],
+      "execution": {
+        "worker": "root",
+        "max_attempts": 3,
+        "attempts": [
+          {
+            "number": 1,
+            "outcome": "passed",
+            "summary": "全430問の表示対象照合、11検査、型検査、PC/SP、独立レビュー合格",
+            "at": "2026-11-06T04:24:34.921Z",
+            "failed_criteria": []
+          }
+        ]
+      }
+    },
+    {
+      "id": "remove_even_question_number_rows",
+      "context": "development",
+      "title": "偶数歴検型も番号配点独立行を非表示にする",
+      "status": "done",
+      "depends_on": [],
+      "authorization": "requested",
+      "request_ref": "2026-11-06 ユーザー依頼：偶数の歴検型も削除",
+      "next_action": "追加依頼を待つ",
+      "evidence": [
+        "docs/even-question-number-display.md",
+        "docs/even-question-number-review.md"
+      ],
+      "last_verified_at": "2026-11-06T04:37:01.699Z",
+      "verification_scope": "全10模試430問、ローカル表示のみ",
+      "acceptance": [
+        {
+          "id": "checks",
+          "kind": "automated",
+          "description": "依頼された変更範囲の検査が成功する",
+          "verification": "対象に必要な既存検査を選び、結果と根拠を記録する",
+          "status": "passed",
+          "evidence": [
+            "docs/even-question-number-display.md"
+          ],
+          "checked_at": "2026-11-06T04:37:01.699Z"
+        },
+        {
+          "id": "review",
+          "kind": "review",
+          "description": "実装担当以外が受入条件と成果物を確認する",
+          "verification": "別担当のレビューで未解決の問題がないことを確認する",
+          "status": "passed",
+          "evidence": [
+            "docs/even-question-number-review.md"
+          ],
+          "checked_at": "2026-11-06T04:37:01.699Z",
+          "reviewer": "author_mock_04"
+        }
+      ],
+      "execution": {
+        "worker": "root",
+        "max_attempts": 3,
+        "attempts": [
+          {
+            "number": 1,
+            "outcome": "passed",
+            "summary": "全430問の非破壊検査、11テスト、型検査、PC/SPと独立レビュー合格",
+            "at": "2026-11-06T04:37:02.557Z",
+            "failed_criteria": []
+          }
+        ]
+      }
+    },
+    {
+      "id": "mock01_guidance_local_numbers",
+      "context": "development",
+      "title": "模試1案内の番号範囲を大問内番号へ合わせる",
+      "status": "done",
+      "depends_on": [],
+      "authorization": "requested",
+      "request_ref": "2026-11-06 ユーザー依頼：模試1案内の通し番号表記修正",
+      "next_action": "追加依頼を待つ",
+      "evidence": [
+        "docs/mock01-guidance-numbering.md",
+        "docs/mock01-guidance-numbering-review.md"
+      ],
+      "last_verified_at": "2026-11-06T04:42:28.675Z",
+      "verification_scope": "模試1案内6件の表示のみ。DB不変",
+      "acceptance": [
+        {
+          "id": "checks",
+          "kind": "automated",
+          "description": "依頼された変更範囲の検査が成功する",
+          "verification": "対象に必要な既存検査を選び、結果と根拠を記録する",
+          "status": "passed",
+          "evidence": [
+            "docs/mock01-guidance-numbering.md"
+          ],
+          "checked_at": "2026-11-06T04:42:28.675Z"
+        },
+        {
+          "id": "review",
+          "kind": "review",
+          "description": "実装担当以外が受入条件と成果物を確認する",
+          "verification": "別担当のレビューで未解決の問題がないことを確認する",
+          "status": "passed",
+          "evidence": [
+            "docs/mock01-guidance-numbering-review.md"
+          ],
+          "checked_at": "2026-11-06T04:42:28.675Z",
+          "reviewer": "author_mock_04"
+        }
+      ],
+      "execution": {
+        "worker": "root",
+        "max_attempts": 3,
+        "attempts": [
+          {
+            "number": 1,
+            "outcome": "passed",
+            "summary": "全6案内の番号対応と本文保持、12テスト、型検査、PC/SPと独立レビュー合格",
+            "at": "2026-11-06T04:42:29.037Z",
+            "failed_criteria": []
+          }
+        ]
+      }
+    },
+    {
+      "id": "mock01_material_heading_dedup",
+      "context": "development",
+      "title": "模試1資料の重複英字見出しを統合する",
+      "status": "done",
+      "depends_on": [],
+      "authorization": "requested",
+      "request_ref": "2026-11-06 ユーザー依頼：角括弧なし英字を削除しテーマを見出し横へ",
+      "next_action": "追加依頼を待つ",
+      "evidence": [
+        "docs/mock01-material-heading.md",
+        "docs/mock01-material-heading-review.md"
+      ],
+      "last_verified_at": "2026-11-06T04:49:13.009Z",
+      "verification_scope": "模試1全資料、ローカル表示のみ",
+      "acceptance": [
+        {
+          "id": "checks",
+          "kind": "automated",
+          "description": "依頼された変更範囲の検査が成功する",
+          "verification": "対象に必要な既存検査を選び、結果と根拠を記録する",
+          "status": "passed",
+          "evidence": [
+            "docs/mock01-material-heading.md"
+          ],
+          "checked_at": "2026-11-06T04:49:13.009Z"
+        },
+        {
+          "id": "review",
+          "kind": "review",
+          "description": "実装担当以外が受入条件と成果物を確認する",
+          "verification": "別担当のレビューで未解決の問題がないことを確認する",
+          "status": "passed",
+          "evidence": [
+            "docs/mock01-material-heading-review.md"
+          ],
+          "checked_at": "2026-11-06T04:49:13.009Z",
+          "reviewer": "author_mock_04"
+        }
+      ],
+      "execution": {
+        "worker": "root",
+        "max_attempts": 3,
+        "attempts": [
+          {
+            "number": 1,
+            "outcome": "passed",
+            "summary": "全17資料の照合、13テスト、型検査、PC/SPと独立レビュー合格",
+            "at": "2026-11-06T04:49:13.174Z",
+            "failed_criteria": []
+          }
+        ]
+      }
+    },
+    {
+      "id": "mock02_passage_copy_cleanup",
+      "context": "development",
+      "title": "模試2の内部表現と不自然な参照範囲を修正",
+      "status": "done",
+      "depends_on": [],
+      "authorization": "requested",
+      "request_ref": "2026-11-06 ユーザー依頼：作問者作成と不自然な問範囲を削除修正",
+      "next_action": "追加依頼を待つ",
+      "evidence": [
+        "docs/mock02-passage-copy.md",
+        "docs/mock02-passage-copy-review.md"
+      ],
+      "last_verified_at": "2026-11-06T05:02:20.261Z",
+      "verification_scope": "模試2共通本文の表示、ローカルのみ",
+      "acceptance": [
+        {
+          "id": "checks",
+          "kind": "automated",
+          "description": "依頼された変更範囲の検査が成功する",
+          "verification": "対象に必要な既存検査を選び、結果と根拠を記録する",
+          "status": "passed",
+          "evidence": [
+            "docs/mock02-passage-copy.md"
+          ],
+          "checked_at": "2026-11-06T05:02:20.261Z"
+        },
+        {
+          "id": "review",
+          "kind": "review",
+          "description": "実装担当以外が受入条件と成果物を確認する",
+          "verification": "別担当のレビューで未解決の問題がないことを確認する",
+          "status": "passed",
+          "evidence": [
+            "docs/mock02-passage-copy-review.md"
+          ],
+          "checked_at": "2026-11-06T05:02:20.261Z",
+          "reviewer": "author_mock_04"
+        }
+      ],
+      "execution": {
+        "worker": "root",
+        "max_attempts": 3,
+        "attempts": [
+          {
+            "number": 1,
+            "outcome": "passed",
+            "summary": "全5本文と43参照、14テスト、型検査、PC/SPと独立レビューを確認",
+            "at": "2026-11-06T05:02:20.939Z",
+            "failed_criteria": []
+          }
+        ]
+      }
+    },
+    {
+      "id": "mock02_remove_intro_sentences",
+      "context": "development",
+      "title": "模試2第1・3〜5問の指定案内文を非表示にする",
+      "status": "done",
+      "depends_on": [],
+      "authorization": "requested",
+      "request_ref": "2026-11-06 ユーザー依頼：第4第5問指示・第3第5問内部説明文を削除。追加依頼：第1問末尾の次の問1〜10に答えなさいも削除",
+      "next_action": "追加依頼を待つ",
+      "evidence": [
+        "docs/mock02-intro-removal.md",
+        "docs/mock02-intro-removal-review.md"
+      ],
+      "last_verified_at": "2026-11-06T05:08:44.284Z",
+      "verification_scope": "模試2共通本文の指定文のみ、ローカル",
+      "acceptance": [
+        {
+          "id": "checks",
+          "kind": "automated",
+          "description": "依頼された変更範囲の検査が成功する",
+          "verification": "対象に必要な既存検査を選び、結果と根拠を記録する",
+          "status": "passed",
+          "evidence": [
+            "docs/mock02-intro-removal.md"
+          ],
+          "checked_at": "2026-11-06T05:08:44.284Z"
+        },
+        {
+          "id": "review",
+          "kind": "review",
+          "description": "実装担当以外が受入条件と成果物を確認する",
+          "verification": "別担当のレビューで未解決の問題がないことを確認する",
+          "status": "passed",
+          "evidence": [
+            "docs/mock02-intro-removal-review.md"
+          ],
+          "checked_at": "2026-11-06T05:08:44.284Z",
+          "reviewer": "author_mock_04"
+        }
+      ],
+      "execution": {
+        "worker": "root",
+        "max_attempts": 3,
+        "attempts": [
+          {
+            "number": 1,
+            "outcome": "passed",
+            "summary": "指定文残存なし、43参照、15検査、型検査、PC/SPと独立レビュー確認",
+            "at": "2026-11-06T05:08:44.984Z",
+            "failed_criteria": []
+          }
+        ]
+      }
+    },
+    {
+      "id": "rekiken_and_presentation_git_delivery",
+      "context": "operations",
+      "title": "作問・分類・表示修正の知見を統合しcommit/pushする",
+      "status": "doing",
+      "depends_on": [],
+      "authorization": "requested",
+      "request_ref": "2026-11-06 ユーザー依頼：ここまでの内容をAGENTSに追記しcommit/push",
+      "next_action": "commit/pushしリモート検査を確認",
+      "evidence": [
+        "docs/rekiken-presentation-delivery.md",
+        "docs/rekiken-presentation-delivery-review.md"
+      ],
+      "last_verified_at": "2026-11-06T05:28:36.756Z",
+      "verification_scope": "ここまでの未コミット変更。資料/DB/秘密値除外、公開操作なし",
+      "acceptance": [
+        {
+          "id": "checks",
+          "kind": "automated",
+          "description": "依頼された変更範囲の検査が成功する",
+          "verification": "対象に必要な既存検査を選び、結果と根拠を記録する",
+          "status": "passed",
+          "evidence": [
+            "docs/rekiken-presentation-delivery.md"
+          ],
+          "checked_at": "2026-11-06T05:28:36.756Z"
+        },
+        {
+          "id": "review",
+          "kind": "review",
+          "description": "実装担当以外が受入条件と成果物を確認する",
+          "verification": "別担当のレビューで未解決の問題がないことを確認する",
+          "status": "passed",
+          "evidence": [
+            "docs/rekiken-presentation-delivery-review.md"
+          ],
+          "checked_at": "2026-11-06T05:28:36.756Z",
+          "reviewer": "author_mock_04"
+        }
+      ],
+      "execution": {
+        "worker": "root",
+        "max_attempts": 3,
+        "attempts": [
+          {
+            "number": 1,
+            "outcome": "passed",
+            "summary": "知見追記、168/259/128検査、型検査/build、資料保護と独立レビュー合格",
+            "at": "2026-11-06T05:28:37.503Z",
             "failed_criteria": []
           }
         ]

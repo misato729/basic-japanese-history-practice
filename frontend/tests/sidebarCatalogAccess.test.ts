@@ -152,7 +152,7 @@ test('static accordion opens free and paid menus without requesting questions or
       for (const number of [1, paidConfig.payments.free_exam_count + 1]) {
         h.sidebar.toggleExam(number)
         assert.equal(h.sidebar.openExam.value, number)
-        assert.equal(h.sidebar.exams.value.find((exam: catalog.ExamCatalogEntry) => exam.exam_number === number).groupLinks.length, number === 1 ? 6 : 0)
+        assert.equal(h.sidebar.exams.value.find((exam: catalog.ExamCatalogEntry) => exam.exam_number === number).groupLinks.length, number === 1 ? 6 : 5)
         h.sidebar.toggleExam(number)
         assert.equal(h.sidebar.openExam.value, null)
       }
@@ -188,7 +188,7 @@ test('revocation immediately replaces an open real paid group with a static lock
     assert.equal(h.sidebar.openExam.value, 6)
     assert.equal(h.sidebar.isStaticExamLocked(paid), true)
     assert.equal(h.sidebar.examTarget(paid), '/premium')
-    assert.equal(paid.groupLinks.length, 0)
+    assert.equal(paid.groupLinks.length, 5)
     assert.ok(paid.groupLinks.every((entry: { to: string }) => entry.to === '/premium'))
     h.user.value = null; h.accessToken.value = null
     assert.equal(h.sidebar.examTarget(h.sidebar.exams.value.find((exam: catalog.ExamCatalogEntry) => exam.exam_number === 6)), '/premium')

@@ -24,7 +24,7 @@ unique(config.exam.choice_labels, 'choice_labels')
 assert(config.exam.choice_labels.every(label => typeof label === 'string' && label.trim() && label.length <= 10), 'choice labels must be 1..10 characters')
 if (config.exam.formats !== undefined) {
   assert(config.exam.formats && typeof config.exam.formats === 'object' && !Array.isArray(config.exam.formats), 'exam.formats must be an object')
-  const formats = { center_mock: { group_count: 6, question_count: 36, allowed_group_question_counts: [4, 6, 8], group_question_counts: [6, 6, 6, 6, 4, 8] }, group_practice: { group_count: 1, allowed_group_question_counts: [7, 8] }, rekiken_mock: { group_count: 4, question_count: 30, allowed_group_question_counts: [7, 8] } }
+  const formats = { rekiken2_mock: { group_count: 5, question_count: 50, allowed_group_question_counts: [10], group_question_counts: [10, 10, 10, 10, 10] }, center_mock: { group_count: 6, question_count: 36, allowed_group_question_counts: [4, 6, 8], group_question_counts: [6, 6, 6, 6, 4, 8] }, group_practice: { group_count: 1, allowed_group_question_counts: [7, 8] }, rekiken_mock: { group_count: 4, question_count: 30, allowed_group_question_counts: [7, 8] } }
   for (const [code, rule] of Object.entries(config.exam.formats)) assert.deepEqual(rule, formats[code], `Unsupported format: ${code}`)
 }
 assert.equal(typeof config.payments.enabled, 'boolean')

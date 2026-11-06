@@ -3,7 +3,7 @@ import { selectReviewPositions } from '~/utils/reviewPositions'
 import type { NitroFetchOptions } from 'nitropack/types'
 import { EXAM_CATALOG, FREE_EXAM_MAX, catalogExamLabel, catalogGroupLabel, publishedQuestionNumbers, type ExamCatalogEntry } from '~/utils/examCatalog'
 import type { LearningBlock as ContentBlock, GroupPassage, PassageReference, InputConstraints, SourceReference as StructuredSource } from '../../../../shared/types/learning'
-import { presentExplanationBlocks, presentSources, shortAnswerIssue } from '~/utils/learningPresentation'
+import { presentSharedPassages, presentQuestionBlocks, presentExplanationBlocks, presentSources, shortAnswerIssue } from '~/utils/learningPresentation'
 import { essayAnswerIssue, type EssayConstraints } from '~/utils/essayPresentation'
 import type { EssayGrade } from '../../../../shared/types/essay'
 import { canRetainPassageContext, isCurrentPracticeRequest, reconcilePassageContext, type PracticePassageContext, type PracticeRequestTag } from '~/utils/practicePassageState'
@@ -642,7 +642,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', handleFavoriteModalK
         <NuxtLink v-for="number in visibleGroupNumbers" :key="number" :to="{ path: `/practice/${examNumber}/${number}`, query: practiceNavigationQuery }" :aria-current="number === questionNumber ? 'page' : undefined">問{{ displayedGroup.question_numbers.indexOf(number) + 1 }}</NuxtLink>
       </nav>
       <div class="practice-columns">
-      <SharedPassagePanel v-if="retainedPassageContext" :key="`${retainedPassageContext.scope}:${retainedPassageContext.key}`" ref="sharedPassagePanel" :passages="retainedPassageContext.passages" />
+      <SharedPassagePanel v-if="retainedPassageContext" :key="`${retainedPassageContext.scope}:${retainedPassageContext.key}`" ref="sharedPassagePanel" :passages="presentSharedPassages(retainedPassageContext.passages, retainedPassageContext.examNumber, retainedPassageContext.group.question_numbers)" />
       <section class="question-panel" :aria-busy="questionLoading">
         <h2 class="question-number">問{{ displayedQuestionNumber }}</h2>
         <div v-if="questionLoading" class="question-loading" role="status" aria-live="polite">
@@ -655,7 +655,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', handleFavoriteModalK
         </div>
         <template v-else>
         <div class="question-text">
-          <QuestionContentBlocks :blocks="question.content_blocks" />
+          <QuestionContentBlocks :blocks="presentQuestionBlocks(question.content_blocks)" />
         </div>
 
         <div v-if="question.passage_references?.length" class="passage-references" aria-label="参照する本文">

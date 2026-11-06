@@ -189,3 +189,25 @@ test('four-group mock requires 30 questions; draft siblings do not replace a pub
  assert.equal(switched.groups.length,1);assert.equal(switched.groups[0]!.id,sibling.id);assert.deepEqual(switched.question_numbers,[8,9,10,11,12,13,14,15])
 
 }))
+
+test('classification edits retain shared-passage reference row IDs and saved answers',integration,async()=>isolated(async(db,exam,u)=>{
+ await saveExamSet({exam_number:exam,title:'Synthetic classification material',format_code:'group_practice',publication_status:'draft'},{db})
+ const {ids}=await groupWithQuestions(db,exam,1,7,1)
+ const initial=await loadExamSet(exam,db);await publishExamSet(exam,initial.lock_version,{db})
+ const before=await loadQuestion(ids[0]!,db)
+ await answerQuestion(before.id,{answer_type:'single_choice',selected_choice_id:before.choices[1]!.id,question_version:before.content_version,submission_key:randomUUID()},u,db)
+ await putFavorite(before.id,u,db)
+ const refs=await query('SELECT * FROM question_passage_references WHERE question_id=$1 ORDER BY id',[before.id],db)
+ assert.ok(refs.length)
+ const histories=await query('SELECT * FROM answer_histories WHERE question_id=$1 ORDER BY id',[before.id],db)
+ const favorites=await query('SELECT * FROM favorites WHERE question_id=$1 ORDER BY id',[before.id],db)
+ const category=configuration.categories.minor.find(c=>c.value!==before.category_code)!
+ const input={...before,major_category_code:category.major_category_value,category_code:category.value,is_cultural_history:true,is_art_history:false,cultural_history_category:'other_cultural_history' as const}
+ const saved=await saveQuestion(input,{id:before.id,db})
+ assert.equal(saved.content_version,before.content_version)
+ assert.deepEqual(saved.choices,before.choices)
+ assert.deepEqual(await query('SELECT * FROM question_passage_references WHERE question_id=$1 ORDER BY id',[before.id],db),refs)
+ assert.deepEqual(await query('SELECT * FROM answer_histories WHERE question_id=$1 ORDER BY id',[before.id],db),histories)
+ assert.deepEqual(await query('SELECT * FROM favorites WHERE question_id=$1 ORDER BY id',[before.id],db),favorites)
+ const again=await saveQuestion(saved,{id:saved.id,db});assert.deepEqual(again,saved)
+}))

@@ -1,0 +1,257 @@
+{
+  "schema_version": 1,
+  "revision": 69,
+  "state_hash": "869fcb0a37ad1044b063573b3afb5301a0fe3ddaa00400c757a2a880f56418a0",
+  "recorded_at": "2026-11-06T05:28:37.503Z",
+  "timezone": "UTC",
+  "context": "operations",
+  "task": "rekiken_and_presentation_git_delivery",
+  "summary": "知見追記、168/259/128検査、型検査/build、資料保護と独立レビュー合格",
+  "next_action": "commit/pushしリモート検査を確認",
+  "missing_local_files": [],
+  "git": {
+    "available": true,
+    "head": "bc490866b02f14159c0bd61d971ac615bc657400",
+    "changes": [
+      {
+        "status": "M ",
+        "path": "AGENTS.md"
+      },
+      {
+        "status": "M ",
+        "path": "README.md"
+      },
+      {
+        "status": "M ",
+        "path": "config/exam.json"
+      },
+      {
+        "status": "M ",
+        "path": "docs/authoring-status.md"
+      },
+      {
+        "status": "M ",
+        "path": "docs/center-authoring.md"
+      },
+      {
+        "status": "A ",
+        "path": "docs/duplicate-practice-labels-review.md"
+      },
+      {
+        "status": "A ",
+        "path": "docs/duplicate-practice-labels.md"
+      },
+      {
+        "status": "A ",
+        "path": "docs/even-question-number-display.md"
+      },
+      {
+        "status": "A ",
+        "path": "docs/even-question-number-review.md"
+      },
+      {
+        "status": "M ",
+        "path": "docs/group-heading-review.md"
+      },
+      {
+        "status": "A ",
+        "path": "docs/mock01-guidance-numbering-review.md"
+      },
+      {
+        "status": "A ",
+        "path": "docs/mock01-guidance-numbering.md"
+      },
+      {
+        "status": "A ",
+        "path": "docs/mock01-material-heading-review.md"
+      },
+      {
+        "status": "A ",
+        "path": "docs/mock01-material-heading.md"
+      },
+      {
+        "status": "A ",
+        "path": "docs/mock02-intro-removal-review.md"
+      },
+      {
+        "status": "A ",
+        "path": "docs/mock02-intro-removal.md"
+      },
+      {
+        "status": "A ",
+        "path": "docs/mock02-passage-copy-review.md"
+      },
+      {
+        "status": "A ",
+        "path": "docs/mock02-passage-copy.md"
+      },
+      {
+        "status": "A ",
+        "path": "docs/numbered-group-headings.md"
+      },
+      {
+        "status": "A ",
+        "path": "docs/rekiken-authoring.md"
+      },
+      {
+        "status": "A ",
+        "path": "docs/rekiken-classification.md"
+      },
+      {
+        "status": "A ",
+        "path": "docs/rekiken-local-playable.md"
+      },
+      {
+        "status": "A ",
+        "path": "docs/rekiken-mock-02-authoring-review.md"
+      },
+      {
+        "status": "A ",
+        "path": "docs/rekiken-mock-02-difficulty-review.md"
+      },
+      {
+        "status": "A ",
+        "path": "docs/rekiken-mock-02-revision-review.md"
+      },
+      {
+        "status": "A ",
+        "path": "docs/rekiken-mocks-04-06-08-10-authoring-review.md"
+      },
+      {
+        "status": "A ",
+        "path": "docs/rekiken-presentation-delivery.md"
+      },
+      {
+        "status": "M ",
+        "path": "frontend/app/components/QuestionContentBlocks.vue"
+      },
+      {
+        "status": "M ",
+        "path": "frontend/app/components/SharedPassagePanel.vue"
+      },
+      {
+        "status": "M ",
+        "path": "frontend/app/pages/admin/exams/[examNumber].vue"
+      },
+      {
+        "status": "M ",
+        "path": "frontend/app/pages/admin/exams/index.vue"
+      },
+      {
+        "status": "M ",
+        "path": "frontend/app/pages/practice/[examNumber]/[questionNumber].vue"
+      },
+      {
+        "status": "M ",
+        "path": "frontend/app/utils/examCatalog.ts"
+      },
+      {
+        "status": "M ",
+        "path": "frontend/app/utils/learningPresentation.ts"
+      },
+      {
+        "status": "M ",
+        "path": "frontend/app/utils/staticExamGroups.ts"
+      },
+      {
+        "status": "M ",
+        "path": "frontend/server-tests/grouped-learning.test.ts"
+      },
+      {
+        "status": "M ",
+        "path": "frontend/server-tests/operations.test.ts"
+      },
+      {
+        "status": "A ",
+        "path": "frontend/server-tests/rekiken2-mock.test.ts"
+      },
+      {
+        "status": "A ",
+        "path": "frontend/server/database/migrations/014_rekiken2_mock.sql"
+      },
+      {
+        "status": "M ",
+        "path": "frontend/server/operations/content-v2.ts"
+      },
+      {
+        "status": "M ",
+        "path": "frontend/server/services/learning-structure.ts"
+      },
+      {
+        "status": "M ",
+        "path": "frontend/server/services/learning-validation.ts"
+      },
+      {
+        "status": "M ",
+        "path": "frontend/server/services/learning-writer.ts"
+      },
+      {
+        "status": "M ",
+        "path": "frontend/server/services/learning.ts"
+      },
+      {
+        "status": "M ",
+        "path": "frontend/shared/examConfig.ts"
+      },
+      {
+        "status": "M ",
+        "path": "frontend/shared/types/learning.ts"
+      },
+      {
+        "status": "M ",
+        "path": "frontend/tests/catalogExamNavigation.test.ts"
+      },
+      {
+        "status": "M ",
+        "path": "frontend/tests/groupedLearningPresentation.test.ts"
+      },
+      {
+        "status": "M ",
+        "path": "frontend/tests/sidebarCatalogAccess.test.ts"
+      },
+      {
+        "status": "M ",
+        "path": "scripts/check-template.mjs"
+      },
+      {
+        "status": "??",
+        "path": "docs/rekiken-presentation-delivery-review.md"
+      }
+    ]
+  },
+  "file_hashes": {
+    "AGENTS.md": "f0d14f1338f8bea03c443971e131cdc58d2b337f35c69331cf4d5a9fb61d2248",
+    "README.md": "cb48c7536c770f7ae140c8ee0c426d194aacb5ee86264114f7eba1f321596028",
+    "docs/testing.md": "c92c33d4bea403f07f8140a09078ed81b6169dbc1f50732f370b03ac525f66a5",
+    "docs/workflow/README.md": "bafaa7e4b6c97499275ed7a7746088e5553e2c56811aea08af359b92ecdf0b2c",
+    "docs/workflow/policy.json": "d21fbb063281b36ef860225f34009c32b37dd2153fbd35138bb872a6f5f947f7",
+    "docs/workflow/task.example.json": "4bf161efce99b7d0a26798e3445d1f142505e512eedd591ea11cfb194d67da9f",
+    "docs/workflow/contexts/product.md": "573a41c87d7b3d468381106aa1293845d2f224ded600243e23ff34e5c2806003",
+    "docs/workflow/contexts/development.md": "75844c292a5c1100a6c8017b6c37772999cca300b766aa2e12c0eebc76272a3c",
+    "docs/workflow/contexts/operations.md": "c33ac2eff3299e1a16ea93d03dc544f042fde17694744246c3a7501c91249063",
+    "scripts/context.mjs": "3828c41d1cc5a6977b8444035e094e61e1c9895fcaa9451ecb1919e799ecaffc",
+    "scripts/context.test.mjs": "bc14ad1ba5d331f75d5f34923ac59a2cfe29b5b1c12174b0aa57e6d8ee572923",
+    "scripts/workflow-policy.mjs": "60535f2c9bf42203c059ca39a0b254c168b7cfb2468904a3842725fe3797141e",
+    "scripts/workflow-policy.test.mjs": "394287e7d1e84756a3ac8833918f964ee66f0ef2c34934d121d055fb37af4782",
+    "scripts/workspace-policy.mjs": "685272056c1fcaba765a5c1529b13a5c703aa9c6708baf13b0d63d0d189d6fcb",
+    "scripts/workspace-policy.test.mjs": "2f5517e76009fd3541cddfab0c7577f60870477a15677f53ec3284bcc434bd21",
+    "scripts/check-private-sources.mjs": "1d28447b51b39591d42151f236b837b33d695662168ee5c71500205aa0de96af",
+    "scripts/check-private-sources.test.mjs": "6e3194bd9dd502d3c40390f101d0313593eb3494e50fb11ea33da769cf615c14",
+    ".gitignore": "f7c4953bb35265d0147a09103e0363c537cbd86c8b06c19b48b44d735ead6b34",
+    ".dockerignore": "84869332c30a8da35d8f3b98b4cf16ab6c20634d2ae015710694b641846adbbe",
+    ".githooks/pre-push": "3529b300f7a655102ad899ab31fa8b2c404ec37479d1195aa9bcd3efa97bf90c",
+    "config/exam.json": "23df5d816e8a2bc3cbda4773ab557b6ab7170b7dd53791ad6b2106061861d768",
+    "docs/verification.md": "cc602dfee5fa575e2f40af4c04bf34ea03919380dd1e88aaaaaedfcdf5aa3af4",
+    "docs/bootstrap-review.md": "4cd6dbcaf637ed86f94c818849a5b8b9275022988a116af945baa23cdb007623",
+    "docs/center-authoring.md": "9bb736cfe17da729d891a5fe1137e7ff5d84194ee1f4079a2f7f860684acb0d0",
+    "docs/authoring-status.md": "606a3f516e3f178ae44a123c86e255095349edd58102da514ba3b05bedd03c57",
+    "docs/rekiken-authoring.md": "236e37685244cdf11f4e6fc564436bf0e29af3043a2d6ed3a5c8c2f14b35f1da",
+    "docs/rekiken-mock-02-authoring-review.md": "21cb7f912f9fd581903c2d37384d2e508995b12512ba85ab8041e0ff0e625acc",
+    "docs/rekiken-mock-02-difficulty-review.md": "6f7d9cc2dd21a6a46d8ef8c17a1c3909dcc9ece7e3ed62ecffd1420dcf7ffc34"
+  },
+  "attempt": {
+    "outcome": "passed",
+    "number": 1
+  },
+  "verification_note": "ハッシュ・Git・記録済み完了条件の確認であり、テストや出典照合の自動再実行ではない。依頼・権限は最新のユーザー指示とAGENTS.mdに従う。"
+}

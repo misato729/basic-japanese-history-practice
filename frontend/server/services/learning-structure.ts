@@ -104,6 +104,10 @@ export async function validateExamSet(examNumber:number,db:Database,config=confi
    for(const p of g.passages)try{validateBlocks(p.content_blocks,'question',true)}catch{errors.push(`大問${g.group_number}・本文${p.label}: 本文を完成させてください`)}
   }
   if(rule.question_count!==undefined&&total!==rule.question_count)errors.push(`小問の合計は${rule.question_count}問必要です`)
+  if(set.format_code==='rekiken2_mock'){
+   const qs=groups.flatMap(g=>(g.questions??[]).filter((q:any)=>options.publishedOnly?q.publication_status==='published':q.publication_status!=='private'))
+   if(qs.filter(q=>q.answer_type==='single_choice').length!==45||qs.filter(q=>q.answer_type==='short_text').length!==5)errors.push('四択45問・語句記述5問をそろえてください')
+  }
   if(new Set(coordinates).size!==coordinates.length)errors.push('小問の通し番号が重複しています')
   if(rule.question_count!==undefined&&(coordinates.some(n=>n<1||n>total)||coordinates.length!==total))errors.push('小問の通し番号を1から合計問数までそろえてください')
  }
@@ -128,7 +132,7 @@ export async function saveExamSet(raw:unknown,options:Options={}):Promise<ExamSe
  const config=options.config??configuration
  if(!record(raw))return invalid('教材を指定してください')
  const n=integer(raw.exam_number);if(!n)return invalid('教材番号を確認してください');examNumberValid(n,config)
- if(!nonblank(raw.title)||!['legacy_practice','group_practice','rekiken_mock','center_mock'].includes(raw.format_code)||!status(raw.publication_status))return invalid('教材のタイトル・形式・公開状態を確認してください')
+ if(!nonblank(raw.title)||!['legacy_practice','group_practice','rekiken_mock','center_mock','rekiken2_mock'].includes(raw.format_code)||!status(raw.publication_status))return invalid('教材のタイトル・形式・公開状態を確認してください')
  return transaction(async db=>{
   await query('SELECT pg_advisory_xact_lock($1)',[LEARNING_WRITE_LOCK],db)
   const [before]=await query<any>('SELECT * FROM exam_sets WHERE exam_number=$1 FOR UPDATE',[n],db)
@@ -150,7 +154,7 @@ export async function createQuestionGroup(examNumber:number,raw:unknown,options:
   const set=await loadExamSet(examNumber,db);if(set.format_code==='legacy_practice')invalid('大問を追加する前に教材形式を選択してください')
   const n=integer(raw.group_number),planned=integer(raw.planned_question_count)
   const rule=getExamFormat(config,set.format_code)
-  if(!n||n<1||n>(set.format_code==='center_mock'?rule.group_count:4)||!planned||!rule.allowed_group_question_counts.includes(planned)||typeof raw.title!=='string')return invalid('大問番号・予定問数・タイトルを確認してください')
+  if(!n||n<1||n>(set.format_code==='group_practice'?4:rule.group_count)||!planned||!rule.allowed_group_question_counts.includes(planned)||typeof raw.title!=='string')return invalid('大問番号・予定問数・タイトルを確認してください')
   const [g]=await query<any>("INSERT INTO question_groups(exam_number,group_number,title,planned_question_count,publication_status) VALUES($1,$2,$3,$4,'draft') RETURNING *",[examNumber,n,raw.title,planned],db)
   if(raw.passages?.length)return saveQuestionGroup(g.id,{...raw,publication_status:'draft',lock_version:g.lock_version},{db,config})
   return loadQuestionGroup(g.id,db)
@@ -163,7 +167,7 @@ export async function saveQuestionGroup(id:number,raw:unknown,options:Options={}
   const before=await loadQuestionGroup(id,db);version(before.lock_version,raw.lock_version)
   const n=integer(raw.group_number??before.group_number),planned=integer(raw.planned_question_count??before.planned_question_count),title=raw.title??before.title,pub=raw.publication_status??before.publication_status
   const set=await loadExamSet(before.exam_number,db),rule=getExamFormat(config,set.format_code)
-  if(!n||n<1||n>(set.format_code==='center_mock'?rule.group_count:4)||!planned||!rule.allowed_group_question_counts.includes(planned)||typeof title!=='string'||!status(pub))return invalid('大問の内容を確認してください')
+  if(!n||n<1||n>(set.format_code==='group_practice'?4:rule.group_count)||!planned||!rule.allowed_group_question_counts.includes(planned)||typeof title!=='string'||!status(pub))return invalid('大問の内容を確認してください')
   await query('UPDATE question_groups SET group_number=$1,title=$2,planned_question_count=$3,publication_status=$4,lock_version=lock_version+1,updated_at=NOW() WHERE id=$5',[n,title,planned,pub,id],db)
   const changedPassageIds:number[]=[]
   if(raw.passages!==undefined){

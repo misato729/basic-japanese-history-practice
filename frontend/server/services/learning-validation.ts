@@ -23,7 +23,7 @@ export type NormalizedQuestionInput = QuestionInput & {
 }
 export type BlockContext = 'question' | 'explanation' | 'choice'
 const allowedTypes: Record<BlockContext, readonly string[]> = {
-  question: ['text','quote','table','code','code_group','fill_in_text','fill_in_quote'],
+  question: ['image','text','quote','table','code','code_group','fill_in_text','fill_in_quote'],
   explanation: ['text','quote','table','code'], choice: ['text','table','fill_in_choice'],
 }
 export const record = (value: unknown): value is Record<string, any> => value !== null && typeof value === 'object' && !Array.isArray(value)
@@ -50,6 +50,9 @@ function parseBlock(value: unknown, context: BlockContext, preserveOptionalAttri
   const block: Block = { type:value.type }
   if (value.id !== undefined) { if (!key(value.id)) return invalid('表示ブロックのIDを確認してください'); block.id=value.id }
   switch(block.type) {
+    case 'image':
+      if (typeof value.src !== 'string' || value.src.length > 3000000 || !/^data:image\/png;base64,iVBORw0KGgo[A-Za-z0-9+/]*={0,2}$/.test(value.src) || !nonblank(value.alt) || value.alt.length > 500) return invalid('設問図の形式を確認してください')
+      block.src=value.src;block.alt=value.alt;break;
     case 'text': case 'quote': case 'fill_in_text': case 'fill_in_quote':
       if (value.inlines !== undefined) {
         block.inlines=parseInlines(value.inlines)
@@ -86,6 +89,7 @@ export function validateBlocks(value: unknown, context: BlockContext, published=
   }
   const complete=blocks.length>0&&blocks.every(block=>{
     switch(block.type) {
+      case 'image': return nonblank(block.src)&&nonblank(block.alt)
       case 'text':case 'quote':case 'fill_in_text':case 'fill_in_quote': return nonblank(blockText(block))
       case 'code':return nonblank(block.code)
       case 'fill_in_choice':return Boolean(block.cells?.length&&block.cells.every(nonblank))
@@ -124,6 +128,7 @@ export function validateInputConstraints(value:unknown):InputConstraints {
   if(value===undefined)return {}
   if(!record(value))return invalid('記述の入力条件を確認してください')
   const out:InputConstraints={}
+  if(value.ignore_book_brackets!==undefined){if(typeof value.ignore_book_brackets!=='boolean')return invalid('括弧の入力条件を確認してください');out.ignore_book_brackets=value.ignore_book_brackets}
   if(value.script!==undefined){if(!['any','kanji','katakana'].includes(value.script))return invalid('文字種を確認してください');out.script=value.script}
   for(const field of ['exact_length','max_length'] as const)if(value[field]!==undefined&&value[field]!==null&&value[field]!==''){
     const n=integer(value[field]);if(!n||n>1000)return invalid('入力文字数を確認してください');out[field]=n
@@ -142,9 +147,9 @@ export function validateTopics(value:unknown,config:ExamConfiguration):TopicLink
   if(new Set(result.map(v=>v.category_code)).size!==result.length)return invalid('関連分類が重複しています')
   return result
 }
-export function normalizeAnswerText(value:string):string{return value.normalize('NFKC').trim()}
+export function normalizeAnswerText(value:string,rules:InputConstraints={}):string{const text=value.normalize('NFKC').trim();return rules.ignore_book_brackets?text.replace(/^[『「](.*)[』」]$/u,'$1'):text}
 export function checkTextConstraints(value:string,rules:InputConstraints):boolean {
-  const text=normalizeAnswerText(value);const length=Array.from(text).length
+  const text=normalizeAnswerText(value,rules);const length=Array.from(text).length
   return Boolean(text)&&length<=(rules.max_length??1000)&&(!rules.exact_length||length===rules.exact_length)
     &&(rules.script!=='kanji'||/^[\p{Script=Han}々〇]+$/u.test(text))
     &&(rules.script!=='katakana'||/^[\p{Script=Katakana}ー・＝=\s]+$/u.test(text))
@@ -197,7 +202,7 @@ export function validateQuestionInput(value:unknown,config:ExamConfiguration=con
   const sourceReferences=validateSources(value.source_references,published),rules=validateInputConstraints(value.input_constraints)
   const accepted=value.accepted_answers??[]
   if(!strings(accepted)||accepted.length>100||accepted.some(v=>!nonblank(v)||v.length>1000))return invalid('語句記述の正答表記を確認してください')
-  if(new Set(accepted.map(normalizeAnswerText)).size!==accepted.length)return invalid('語句記述の正答表記が重複しています')
+  if(new Set(accepted.map(v=>normalizeAnswerText(v,rules))).size!==accepted.length)return invalid('語句記述の正答表記が重複しています')
   if(answerType==='short_text'&&published&&(!accepted.length||accepted.some(v=>!checkTextConstraints(v,rules))))return invalid('入力条件を満たす語句記述の正答が必要です')
   const rawChoices=value.choices??[]
   if(!Array.isArray(rawChoices))return invalid('選択肢を配列で指定してください')

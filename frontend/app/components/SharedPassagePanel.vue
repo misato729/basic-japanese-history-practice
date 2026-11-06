@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import type { GroupPassage, PassageReference } from '../../shared/types/learning'
-import { passageAnchorId } from '../utils/learningPresentation'
+import type { PassageReference } from '../../shared/types/learning'
+import { passageAnchorId, type PresentedPassage } from '../utils/learningPresentation'
 
-defineProps<{ passages: GroupPassage[] }>()
+defineProps<{ passages: PresentedPassage[] }>()
 const contentId = useId()
 const open = ref(true)
 
@@ -23,7 +23,7 @@ defineExpose({ showReference })
     <button class="passage-toggle" type="button" :aria-expanded="open" :aria-controls="contentId" @click="open = !open">共通本文 <UIcon :name="open ? 'i-lucide-chevron-up' : 'i-lucide-chevron-down'" /></button>
     <div v-show="open" :id="contentId">
       <section v-for="passage in passages" :id="passageAnchorId(passage.id)" :key="passage.id" class="shared-passage" tabindex="-1">
-        <h2>【{{ passage.label }}】</h2>
+        <h2 v-if="passage.label.trim() !== '共通本文'">【{{ passage.label }}】<template v-if="passage.heading_title"> {{ passage.heading_title }}</template></h2>
         <QuestionContentBlocks :blocks="passage.content_blocks" :anchor-prefix="`passage-${passage.id}`" />
       </section>
     </div>

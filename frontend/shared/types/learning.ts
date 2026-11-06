@@ -1,11 +1,11 @@
 export type AnswerType = 'single_choice' | 'short_text' | 'essay'
-export type ExamFormatCode = 'legacy_practice' | 'group_practice' | 'rekiken_mock' | 'center_mock'
+export type ExamFormatCode = 'legacy_practice' | 'group_practice' | 'rekiken_mock' | 'center_mock' | 'rekiken2_mock'
 export type PassageInline =
   | { type: 'text'; text: string }
   | { type: 'anchor'; id: string; label: string; text: string; underline?: boolean }
   | { type: 'blank'; id: string; label: string }
 export type LearningBlock = {
-  type: string; id?: string; text?: string; inlines?: PassageInline[]; source?: string | null
+  type: string; src?: string; alt?: string; id?: string; text?: string; inlines?: PassageInline[]; source?: string | null
   title?: string | null; code?: string; headers?: string[]; rows?: string[][]
   items?: { title?: string | null; code: string }[]; cells?: string[]
 }
@@ -13,7 +13,7 @@ export type SourceReference = {
   kind: 'book' | 'web'; title: string; publisher?: string; edition?: string
   publication_year?: string; section?: string; locator?: string; url?: string; checked_at?: string
 }
-export type InputConstraints = { script?: 'any' | 'kanji' | 'katakana'; exact_length?: number; max_length?: number; hint?: string }
+export type InputConstraints = { ignore_book_brackets?: boolean; script?: 'any' | 'kanji' | 'katakana'; exact_length?: number; max_length?: number; hint?: string }
 export type TopicLink = { major_category_code: string; category_code: string }
 export type PassageReference = { passage_id: number; anchor_id: string | null }
 export type GroupPassage = { id: number; group_id?: number; label: string; display_order: number; content_blocks: LearningBlock[] }
