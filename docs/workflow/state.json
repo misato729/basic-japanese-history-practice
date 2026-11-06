@@ -1,10 +1,10 @@
 {
   "schema_version": 1,
-  "revision": 70,
-  "updated_at": "2026-11-06T05:28:37.920Z",
+  "revision": 71,
+  "updated_at": "2026-11-06T05:33:49.168Z",
   "workspace_relative_to_repo": ".",
   "active_context": "operations",
-  "last_checkpoint": "docs/workflow/handoffs/2026-11-06T05-28-37-920Z-r70.json",
+  "last_checkpoint": "docs/workflow/handoffs/2026-11-06T05-33-49-168Z-r71.json",
   "gate_policy": {
     "version": 1,
     "legacy_task_ids": []
@@ -1344,17 +1344,17 @@
       "id": "rekiken_and_presentation_git_delivery",
       "context": "operations",
       "title": "作問・分類・表示修正の知見を統合しcommit/pushする",
-      "status": "doing",
+      "status": "done",
       "depends_on": [],
       "authorization": "requested",
       "request_ref": "2026-11-06 ユーザー依頼：ここまでの内容をAGENTSに追記しcommit/push",
-      "next_action": "commit/pushしリモート検査を確認",
+      "next_action": "追加依頼を待つ",
       "evidence": [
         "docs/rekiken-presentation-delivery.md",
         "docs/rekiken-presentation-delivery-review.md"
       ],
-      "last_verified_at": "2026-11-06T05:28:36.756Z",
-      "verification_scope": "ここまでの未コミット変更。資料/DB/秘密値除外、公開操作なし",
+      "last_verified_at": "2026-11-06T05:33:48.472Z",
+      "verification_scope": "ここまでの未コミット変更。資料/DB/秘密値除外、公開操作なし。実装9a6b008のpushとリモート一致、GitHub Actions全3ジョブ成功を確認",
       "acceptance": [
         {
           "id": "checks",

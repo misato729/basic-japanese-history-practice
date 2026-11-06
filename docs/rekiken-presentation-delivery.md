@@ -18,3 +18,7 @@ AGENTS.mdへ、見出しと本文の重複防止、クラス全体の非表示�
 - 独立レビュー：docs/rekiken-presentation-delivery-review.md。
 
 既存mainは開始時点でorigin/mainと一致。通常pushを使用し、資料保護フックを維持する。コミットメッセージに[skip netlify]を指定し、GitHubの検査は省略しない。サービス公開・DB転送は行わない。
+
+## 送信結果
+
+実装コミット `9a6b008bdb65ed67740b111daffb4283285f7e1a` を既存mainへ通常pushし、origin/mainと一致を確認した。GitHub Actions [Template checks](https://github.com/misato729/basic-japanese-history-practice/actions/runs/42168672805) は harness・verify・netlify-static の全3ジョブ成功。静的生成は成果物検査であり、公開操作ではない。後続コミットはこの結果と完了状態の記録だけを含み、実装変更を伴わない。
