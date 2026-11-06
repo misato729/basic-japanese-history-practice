@@ -211,3 +211,36 @@ test('classification edits retain shared-passage reference row IDs and saved ans
  assert.deepEqual(await query('SELECT * FROM favorites WHERE question_id=$1 ORDER BY id',[before.id],db),favorites)
  const again=await saveQuestion(saved,{id:saved.id,db});assert.deepEqual(again,saved)
 }))
+
+test('passage and stem revision keeps identities and outside history through rollback and repeat writes',integration,async()=>isolated(async(db,exam,u)=>{
+ await saveExamSet({exam_number:exam,title:'Synthetic passage revision',format_code:'group_practice',publication_status:'draft'},{db})
+ const {group,ids}=await groupWithQuestions(db,exam,1,7,1)
+ const set=await loadExamSet(exam,db);await publishExamSet(exam,set.lock_version,{db})
+ const before=await loadQuestion(ids[0]!,db),outside=await loadQuestion(ids[1]!,db)
+ await putFavorite(before.id,u,db)
+ await answerQuestion(outside.id,{answer_type:'single_choice',selected_choice_id:outside.choices[1]!.id,question_version:outside.content_version,submission_key:randomUUID()},u,db)
+ const favorites=await query('SELECT * FROM favorites WHERE question_id=$1',[before.id],db)
+ const outsideHistory=await query('SELECT * FROM answer_histories WHERE question_id=$1',[outside.id],db)
+ const outsideBeforeRevision=await loadQuestion(outside.id,db)
+ const revise=async()=>{
+  const freshGroup=await loadQuestionGroup(group.id,db)
+  const second=freshGroup.passages.find(p=>p.label==='B')
+  const edited=await saveQuestionGroup(group.id,{lock_version:freshGroup.lock_version,passages:[...freshGroup.passages.filter(p=>p.label!=='B'),{...(second?{id:second.id}:{}),label:'B',content_blocks:[{type:'text',inlines:[{type:'text',text:'Synthetic context. '},{type:'anchor',id:'new-b',label:'b',text:'Synthetic comparison',underline:true}]}]}]},{db})
+  const target=edited.passages.find(p=>p.label==='B')!
+  const current=await loadQuestion(before.id,db)
+  return saveQuestion({...current,content_blocks:[{type:'text',text:'Synthetic question about underlined b.'}],passage_references:[{passage_id:target.id,anchor_id:'new-b'}]},{id:current.id,db})
+ }
+ await clientSavepoint(db,'revision_rollback',async()=>{const saved=await revise();assert.equal(saved.id,before.id);assert.deepEqual(saved.choices,before.choices)})
+ assert.deepEqual(await loadQuestion(before.id,db),before)
+ assert.equal((await loadQuestionGroup(group.id,db)).passages.length,1)
+ const saved=await revise(),version=saved.content_version
+ assert.deepEqual(saved.choices,before.choices);assert.equal(saved.answer_type,before.answer_type)
+ assert.equal(saved.content_version,before.content_version+1)
+ const repeated=await revise();assert.equal(repeated.content_version,version);assert.equal(repeated.id,before.id)
+ assert.deepEqual(await loadQuestion(outside.id,db),outsideBeforeRevision)
+ assert.deepEqual(await query('SELECT * FROM answer_histories WHERE question_id=$1',[outside.id],db),outsideHistory)
+ assert.deepEqual(await query('SELECT * FROM favorites WHERE question_id=$1',[before.id],db),favorites)
+ const publicQuestion=(await getQuestion(before.id,u,db)).data
+ assert.equal(publicQuestion.shared_passages[0].label,'B');assert.equal(publicQuestion.shared_passages[0].content_blocks[0].inlines[1].id,'new-b')
+ assert.deepEqual(publicQuestion.passage_references,[{passage_id:publicQuestion.shared_passages[0].id,anchor_id:'new-b'}])
+}))

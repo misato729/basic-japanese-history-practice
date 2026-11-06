@@ -15,7 +15,7 @@ const parts = computed<PassageInline[]>(() => {
 <template>
   <template v-for="(part, index) in parts" :key="index">
     <template v-if="part.type === 'text'">{{ part.text }}</template>
-    <span v-else-if="part.type === 'blank'" :id="anchorPrefix ? `${anchorPrefix}-${part.id}` : undefined" class="inline-blank">{{ part.label }}</span>
+    <span v-else-if="part.type === 'blank'" :id="anchorPrefix ? `${anchorPrefix}-${part.id}` : undefined" class="inline-blank" tabindex="-1">{{ part.label }}</span>
     <span v-else :id="anchorPrefix ? `${anchorPrefix}-${part.id}` : undefined" class="reference-anchor" tabindex="-1">
       <small>({{ part.label }})</small><u v-if="part.underline !== false">{{ part.text }}</u><span v-else>{{ part.text }}</span>
     </span>
@@ -27,5 +27,6 @@ const parts = computed<PassageInline[]>(() => {
 .reference-anchor { scroll-margin-top: calc(var(--site-navigation-height, var(--header-height)) + 28px); outline-offset: 5px; }
 .reference-anchor small { margin-right: .25em; font-weight: 800; }
 .reference-anchor u { text-underline-offset: .2em; text-decoration-thickness: 1.5px; }
+.inline-blank:focus,
 .reference-anchor:focus { background: var(--surface-tint); outline: 2px solid var(--teal); }
 </style>

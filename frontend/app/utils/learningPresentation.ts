@@ -98,6 +98,15 @@ export const presentQuestionBlocks = (blocks: LearningBlock[]): LearningBlock[] 
 
 export type PresentedPassage = GroupPassage & { heading_title?: string }
 
+export const presentPassageHeading = (passage: PresentedPassage): PresentedPassage => {
+  const first = passage.content_blocks[0]
+  if (!/^[A-Z]$/u.test(passage.label) || !isPlainTextBlock(first)) return passage
+  const heading = first.text.trim().match(/^([A-Z])(?:[ \t　]+([^\r\n]+))?$/u)
+  if (!heading || heading[1] !== passage.label) return passage
+  return { ...passage, heading_title: heading[2]?.trim(), content_blocks: passage.content_blocks.slice(1) }
+}
+
+
 const presentMockTwoPassageText = (text: string) => text
   .replace(/[（(]本文は作問者作成[）)]/gu, '')
   .replace(/[ \t　]*[（(]作問者作成[）)]/gu, '')
@@ -127,11 +136,5 @@ export const presentSharedPassages = (passages: GroupPassage[], examNumber: numb
     ...passage,
     content_blocks: passage.content_blocks.map(block => isPlainTextBlock(block)
       ? { ...block, text: block.text.replace(range, `問1〜${questionNumbers.length}`) } : block),
-  } : passage).map(passage => {
-    const first = passage.content_blocks[0]
-    if (!/^[A-Z]$/u.test(passage.label) || !isPlainTextBlock(first)) return passage
-    const heading = first.text.trim().match(/^([A-Z])(?:[ \t　]+([^\r\n]+))?$/u)
-    if (!heading || heading[1] !== passage.label) return passage
-    return { ...passage, heading_title: heading[2]?.trim(), content_blocks: passage.content_blocks.slice(1) }
-  })
+  } : passage).map(presentPassageHeading)
 }

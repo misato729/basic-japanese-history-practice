@@ -1,10 +1,10 @@
 {
   "schema_version": 1,
-  "revision": 71,
-  "updated_at": "2026-11-06T05:33:49.168Z",
+  "revision": 78,
+  "updated_at": "2026-11-06T08:14:12.906Z",
   "workspace_relative_to_repo": ".",
-  "active_context": "operations",
-  "last_checkpoint": "docs/workflow/handoffs/2026-11-06T05-33-49-168Z-r71.json",
+  "active_context": "development",
+  "last_checkpoint": "docs/workflow/handoffs/2026-11-06T08-14-12-906Z-r78.json",
   "gate_policy": {
     "version": 1,
     "legacy_task_ids": []
@@ -1389,6 +1389,151 @@
             "outcome": "passed",
             "summary": "知見追記、168/259/128検査、型検査/build、資料保護と独立レビュー合格",
             "at": "2026-11-06T05:28:37.503Z",
+            "failed_criteria": []
+          }
+        ]
+      }
+    },
+    {
+      "id": "mock_passage_and_stem_revision",
+      "context": "product",
+      "title": "過去問に基づき共通本文・下線と設問文を全面改稿",
+      "status": "doing",
+      "depends_on": [],
+      "authorization": "requested",
+      "request_ref": "2026-11-06 ユーザー指摘：模試2以外の共通本文/設問が簡素。主知識と選択肢を保持し過去問を再確認して改稿",
+      "next_action": "歴検代表を確認し、各模試の本文と設問を全体改稿する",
+      "evidence": [],
+      "last_verified_at": null,
+      "verification_scope": "模試1/3/4/5/6/7/8/9/10の380問。模試2は比較基準として保持。原典/選択肢/解答/分類/IDを保全し本文と設問を改稿。ローカルのみ、Git送信・外部公開なし",
+      "acceptance": [
+        {
+          "id": "checks",
+          "kind": "automated",
+          "description": "対象全問の選択肢/正答/主知識を保持し原典確認済み本文と下線参照を改稿する",
+          "verification": "過去問形式測定、代表大問、全件不変項目/参照/情報供給/原典照合、Markdown/保存データ一致とPC/SP操作",
+          "status": "pending",
+          "evidence": [],
+          "checked_at": null
+        },
+        {
+          "id": "review",
+          "kind": "review",
+          "description": "別担当が過去問形式適合と最短解法・情報供給を独立に検査する",
+          "verification": "新本文の知識根拠、下線と設問の対応、他問正答露出、解法と難度への影響を全件判定",
+          "status": "pending",
+          "evidence": [],
+          "checked_at": null,
+          "reviewer": null
+        }
+      ],
+      "execution": {
+        "worker": "root",
+        "max_attempts": 3,
+        "attempts": []
+      }
+    },
+    {
+      "id": "exam_overview_current_spec",
+      "context": "development",
+      "title": "試験概要を現在の教材構成と演習仕様へ更新する",
+      "status": "done",
+      "depends_on": [],
+      "authorization": "requested",
+      "request_ref": "2026-11-06 ユーザー依頼：/exam-overviewの内容を現在の仕様に更新。追加指定：「利用できる範囲」は削除。",
+      "next_action": "追加依頼を待つ",
+      "evidence": [
+        "docs/exam-overview-update.md"
+      ],
+      "last_verified_at": "2026-11-06T06:29:09.122Z",
+      "verification_scope": "専用開発DB全10回430問を読取照合。最終版の関連33件・型・設定・資料保護・PC1280/SP390の表示と導線・独立レビュー。追加指定の利用範囲セクション削除を確認。ログイン後の実アカウント操作・本番は範囲外。",
+      "acceptance": [
+        {
+          "id": "checks",
+          "kind": "automated",
+          "description": "設定と登録件数に一致し、静的ページで問題APIを取得せずPC/SPで操作できる",
+          "verification": "専用開発DBの集計、設定・サイドバーの既存検査、型検査、PC/SPの実操作",
+          "status": "passed",
+          "evidence": [
+            "docs/exam-overview-update.md"
+          ],
+          "checked_at": "2026-11-06T06:29:09.122Z"
+        },
+        {
+          "id": "review",
+          "kind": "review",
+          "description": "別担当が設定・実装と案内の整合を確認する",
+          "verification": "作成担当と異なる担当による独立レビュー",
+          "status": "passed",
+          "evidence": [
+            "docs/exam-overview-update.md"
+          ],
+          "checked_at": "2026-11-06T06:29:09.122Z",
+          "reviewer": "overview_review"
+        }
+      ],
+      "execution": {
+        "worker": "root",
+        "max_attempts": 3,
+        "attempts": [
+          {
+            "number": 1,
+            "outcome": "passed",
+            "summary": "現行の全10回構成へ更新し利用範囲セクションを削除。最終版の関連33件・型・PC/SP実操作・独立レビューを確認",
+            "at": "2026-11-06T06:29:18.013Z",
+            "failed_criteria": []
+          }
+        ]
+      }
+    },
+    {
+      "id": "commercial_disclosure_preparation",
+      "context": "development",
+      "title": "500円買い切り・模試5以降の販売予定に合わせ特商法表記を整備",
+      "status": "done",
+      "depends_on": [],
+      "authorization": "requested",
+      "request_ref": "2026-11-06 ユーザー依頼：日本史ラボと同様500円買切、模試5以降有料予定の特商法表記ページ。販売準備中の表示削除と日本史ラボの読込後情報を反映。残確認後のコミット・pushを追加依頼。",
+      "next_action": "依頼済みの限定コミット・pushを行う",
+      "evidence": [
+        "docs/commercial-disclosure-update.md"
+      ],
+      "last_verified_at": "2026-11-06T08:13:58.550Z",
+      "verification_scope": "料金/無料枠の正本照合、関連33件・型・資料保護、PC1280/SP390実操作、独立レビュー。決済有効化/本番/実決済なし。",
+      "acceptance": [
+        {
+          "id": "checks",
+          "kind": "automated",
+          "description": "依頼された変更範囲の検査が成功する",
+          "verification": "対象に必要な既存検査を選び、結果と根拠を記録する",
+          "status": "passed",
+          "evidence": [
+            "docs/commercial-disclosure-update.md"
+          ],
+          "checked_at": "2026-11-06T08:13:58.550Z"
+        },
+        {
+          "id": "review",
+          "kind": "review",
+          "description": "実装担当以外が受入条件と成果物を確認する",
+          "verification": "別担当のレビューで未解決の問題がないことを確認する",
+          "status": "passed",
+          "evidence": [
+            "docs/commercial-disclosure-update.md"
+          ],
+          "checked_at": "2026-11-06T08:13:58.550Z",
+          "reviewer": "disclosure_review"
+        }
+      ],
+      "execution": {
+        "worker": "root",
+        "max_attempts": 3,
+        "attempts": [
+          {
+            "number": 1,
+            "outcome": "passed",
+            "summary": "販売者実情報と通常の販売条件を掲載。関連33件・型・資料保護・PC/SP実操作・独立レビュー成功",
+            "at": "2026-11-06T08:14:12.355Z",
             "failed_criteria": []
           }
         ]

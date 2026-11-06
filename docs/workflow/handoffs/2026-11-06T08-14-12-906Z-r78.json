@@ -1,0 +1,101 @@
+{
+  "schema_version": 1,
+  "revision": 78,
+  "state_hash": "a2d2da8ebd8b0fef9aac7dd11c2ccdb0de515bf2cf00a9020c5e67af81791c69",
+  "recorded_at": "2026-11-06T08:14:12.906Z",
+  "timezone": "UTC",
+  "context": "development",
+  "task": "commercial_disclosure_preparation",
+  "summary": "特商法表記と模試5以降の料金条件整備を完了。実決済と本番変更なし",
+  "next_action": "依頼済みの限定コミット・pushを行う",
+  "missing_local_files": [],
+  "git": {
+    "available": true,
+    "head": "5be80cd2503e4a48c8274d26efb6e51a9b5b481d",
+    "changes": [
+      {
+        "status": " M",
+        "path": "AGENTS.md"
+      },
+      {
+        "status": " M",
+        "path": "config/exam.json"
+      },
+      {
+        "status": " M",
+        "path": "docs/center-authoring.md"
+      },
+      {
+        "status": " M",
+        "path": "docs/rekiken-authoring.md"
+      },
+      {
+        "status": " M",
+        "path": "frontend/app/components/QuestionInlineText.vue"
+      },
+      {
+        "status": " M",
+        "path": "frontend/app/components/SharedPassagePanel.vue"
+      },
+      {
+        "status": " M",
+        "path": "frontend/app/components/SiteFooter.vue"
+      },
+      {
+        "status": " M",
+        "path": "frontend/app/pages/commercial-disclosure.vue"
+      },
+      {
+        "status": " M",
+        "path": "frontend/app/utils/learningPresentation.ts"
+      },
+      {
+        "status": " M",
+        "path": "frontend/server-tests/grouped-learning.test.ts"
+      },
+      {
+        "status": " M",
+        "path": "frontend/tests/groupedLearningPresentation.test.ts"
+      },
+      {
+        "status": "??",
+        "path": "docs/commercial-disclosure-update.md"
+      },
+      {
+        "status": "??",
+        "path": "docs/passage-stem-revision.md"
+      }
+    ]
+  },
+  "file_hashes": {
+    "AGENTS.md": "09d311742d8ef73ce1fc5382bef1a331c1e937f257d56a94f25bd4131302e012",
+    "README.md": "cb48c7536c770f7ae140c8ee0c426d194aacb5ee86264114f7eba1f321596028",
+    "docs/testing.md": "c92c33d4bea403f07f8140a09078ed81b6169dbc1f50732f370b03ac525f66a5",
+    "docs/workflow/README.md": "bafaa7e4b6c97499275ed7a7746088e5553e2c56811aea08af359b92ecdf0b2c",
+    "docs/workflow/policy.json": "d21fbb063281b36ef860225f34009c32b37dd2153fbd35138bb872a6f5f947f7",
+    "docs/workflow/task.example.json": "4bf161efce99b7d0a26798e3445d1f142505e512eedd591ea11cfb194d67da9f",
+    "docs/workflow/contexts/product.md": "573a41c87d7b3d468381106aa1293845d2f224ded600243e23ff34e5c2806003",
+    "docs/workflow/contexts/development.md": "62d668a7823c38c357c5c3d3d8afe6e1b33b996d7e026907a5848c26cc90dcea",
+    "docs/workflow/contexts/operations.md": "c33ac2eff3299e1a16ea93d03dc544f042fde17694744246c3a7501c91249063",
+    "scripts/context.mjs": "3828c41d1cc5a6977b8444035e094e61e1c9895fcaa9451ecb1919e799ecaffc",
+    "scripts/context.test.mjs": "bc14ad1ba5d331f75d5f34923ac59a2cfe29b5b1c12174b0aa57e6d8ee572923",
+    "scripts/workflow-policy.mjs": "60535f2c9bf42203c059ca39a0b254c168b7cfb2468904a3842725fe3797141e",
+    "scripts/workflow-policy.test.mjs": "394287e7d1e84756a3ac8833918f964ee66f0ef2c34934d121d055fb37af4782",
+    "scripts/workspace-policy.mjs": "685272056c1fcaba765a5c1529b13a5c703aa9c6708baf13b0d63d0d189d6fcb",
+    "scripts/workspace-policy.test.mjs": "2f5517e76009fd3541cddfab0c7577f60870477a15677f53ec3284bcc434bd21",
+    "scripts/check-private-sources.mjs": "1d28447b51b39591d42151f236b837b33d695662168ee5c71500205aa0de96af",
+    "scripts/check-private-sources.test.mjs": "6e3194bd9dd502d3c40390f101d0313593eb3494e50fb11ea33da769cf615c14",
+    ".gitignore": "f7c4953bb35265d0147a09103e0363c537cbd86c8b06c19b48b44d735ead6b34",
+    ".dockerignore": "84869332c30a8da35d8f3b98b4cf16ab6c20634d2ae015710694b641846adbbe",
+    ".githooks/pre-push": "3529b300f7a655102ad899ab31fa8b2c404ec37479d1195aa9bcd3efa97bf90c",
+    "config/exam.json": "6e017c6fc624a2fc765d9e320ee8b5d08d35d4566b74ef51328817bd9b5a01dd",
+    "docs/verification.md": "cc602dfee5fa575e2f40af4c04bf34ea03919380dd1e88aaaaaedfcdf5aa3af4",
+    "docs/bootstrap-review.md": "4cd6dbcaf637ed86f94c818849a5b8b9275022988a116af945baa23cdb007623",
+    "docs/center-authoring.md": "002bf7336750960447b56ae76e5b772173d927c81f7c1fe4497387bf7abccaa5",
+    "docs/authoring-status.md": "606a3f516e3f178ae44a123c86e255095349edd58102da514ba3b05bedd03c57",
+    "docs/rekiken-authoring.md": "3e2f10babd41cd99ce07a77cc5f988f90e32fc4de0958320c9fd3eff1919201d",
+    "docs/rekiken-mock-02-authoring-review.md": "21cb7f912f9fd581903c2d37384d2e508995b12512ba85ab8041e0ff0e625acc",
+    "docs/rekiken-mock-02-difficulty-review.md": "6f7d9cc2dd21a6a46d8ef8c17a1c3909dcc9ece7e3ed62ecffd1420dcf7ffc34"
+  },
+  "verification_note": "ハッシュ・Git・記録済み完了条件の確認であり、テストや出典照合の自動再実行ではない。依頼・権限は最新のユーザー指示とAGENTS.mdに従う。"
+}

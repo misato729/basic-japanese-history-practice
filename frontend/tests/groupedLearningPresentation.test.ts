@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
-import { presentSharedPassages, presentQuestionBlocks, presentExplanationBlocks, presentSources, shortAnswerIssue, inputConstraintLabel, passageAnchorId } from '../app/utils/learningPresentation.ts'
+import { presentPassageHeading, presentSharedPassages, presentQuestionBlocks, presentExplanationBlocks, presentSources, shortAnswerIssue, inputConstraintLabel, passageAnchorId } from '../app/utils/learningPresentation.ts'
 import { publishedQuestionNumbers, catalogQuestionLabel } from '../app/utils/examCatalog.ts'
 import { selectPracticePositions } from '../app/utils/practiceSequence.ts'
 
@@ -209,4 +209,20 @@ test('mock 2 omits the requested introductory sentences and retains the history 
   assert.equal(shown.content_blocks[0]!.inlines![0],body.inlines[0])
   assert.deepEqual(input,original)
   assert.equal(presentSharedPassages(input,4,[1,2]),input)
+})
+
+test('shared panel presents themed A/B/C headings consistently for any exam without losing anchored first blocks', () => {
+  for (const label of ['A','B','C']) {
+    const body = {type:'text',inlines:[{type:'anchor' as const,id:'a',label:'a',text:'合成本文',underline:true}]}
+    const passage={id:101,label,display_order:1,content_blocks:[{type:'text',text:label+'　合成テーマ'},body]}
+    const original=structuredClone(passage)
+    const shown=presentPassageHeading(passage)
+    assert.equal(shown.heading_title,'合成テーマ')
+    assert.deepEqual(shown.content_blocks,[body])
+    assert.equal(shown.id,passage.id)
+    assert.deepEqual(passage,original)
+    assert.equal(presentPassageHeading(shown),shown)
+    const anchored={...passage,content_blocks:[{type:'text',id:'keep',text:label+'　合成テーマ'},body]}
+    assert.equal(presentPassageHeading(anchored),anchored)
+  }
 })
