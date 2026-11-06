@@ -1,1 +1,2 @@
+/api/*  https://basic-japanese-history-practice.fly.dev/api/:splat  200!
 /*  /200.html  200
