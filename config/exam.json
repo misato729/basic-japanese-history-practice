@@ -443,7 +443,7 @@
   },
   "payments": {
     "enabled": false,
-    "free_exam_count": 10,
+    "free_exam_count": 4,
     "amount": 500,
     "currency": "jpy"
   },
