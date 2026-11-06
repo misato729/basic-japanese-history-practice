@@ -8,3 +8,9 @@ NODE_VERSION = "24"
 # Keep the same static output directory in Netlify and local generation.
 NITRO_PRESET = "static"
 NUXT_PUBLIC_API_BASE = ""
+
+[[redirects]]
+from = "/api/*"
+to = "https://basic-japanese-history-practice.fly.dev/api/:splat"
+status = 200
+force = true
