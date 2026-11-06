@@ -3,7 +3,7 @@ primary_region = "nrt"
 
 [build]
 build-target = "production"
-dockerfile = "Dockerfile"
+dockerfile = "frontend/Dockerfile"
 
 [deploy]
 release_command = "npm run db:migrate"
