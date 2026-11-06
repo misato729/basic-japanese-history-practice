@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { createSidebarExamCatalog, catalogExamLabel, catalogExamStartNumber, catalogGroupLabel, catalogGroupLinks, isCatalogGroupActive, type ExamCatalogEntry, type ExamCatalogGroup, type SidebarExamCatalogEntry } from '~/utils/examCatalog'
+import { isVisibleExam } from '~/utils/examVisibility'
 import { hasFullExamAccess } from '~/utils/examConfig'
 
 const route = useRoute()
@@ -16,6 +17,7 @@ const catalogEnabled = computed(() => onPractice.value || (onHome.value && quali
 const { data: publicCatalog, status: catalogStatus, error: catalogError, refresh: refreshCatalog } = usePracticeFilterCatalog(computed(() => ({})), catalogEnabled)
 const canUsePaidExams = computed(() => hasFullExamAccess(user.value) && (!onHome.value || qualification.allowed.value))
 const exams = computed(() => createSidebarExamCatalog(publicCatalog.value, catalogEnabled.value, canUsePaidExams.value)
+  .filter(isVisibleExam)
   .map(exam => ({ ...exam, groupLinks: catalogGroupLinks(exam) })))
 const isLoading = computed(() => catalogEnabled.value && (catalogStatus.value === 'pending' || catalogStatus.value === 'idle'))
 const hasAccessError = computed(() => Boolean(catalogError.value))

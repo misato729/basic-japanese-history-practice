@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { EXAM_SET_COUNT, FREE_EXAM_MAX, catalogExamLabel, catalogExamStartNumber, type ExamCatalogEntry } from '~/utils/examCatalog'
+import { isVisibleExam } from '~/utils/examVisibility'
 import { CULTURAL_HISTORY_CATEGORIES, HISTORY_TOPICS, serializeHistoryTopicSelection } from '~/utils/historyTopics'
 import type { CulturalHistoryCategoryCode } from '~/utils/examConfig'
 import {
@@ -26,9 +27,9 @@ const hasFullAccess = qualification.allowed
 const { data: publicCatalog, status: publicCatalogStatus, error: publicCatalogError, refresh: refreshPublicCatalog } = usePracticeFilterCatalog(computed(() => ({})), hasFullAccess)
 // Static slots contain no invented question counts or positions. Resolve them only after starting.
 const staticExams: ExamCatalogEntry[] = Array.from({ length: EXAM_SET_COUNT }, (_, index) => ({ exam_number: index + 1, question_numbers: [] }))
-const catalogExams = computed(() => hasFullAccess.value
+const catalogExams = computed(() => (hasFullAccess.value
   ? (publicCatalog.value ?? []).filter(exam => catalogExamStartNumber(exam) !== undefined)
-  : staticExams)
+  : staticExams).filter(isVisibleExam))
 const launcherMode = ref<LauncherMode>('exam')
 const selectedMajorCategory = ref('')
 const selectedCategory = ref('')
@@ -249,7 +250,7 @@ watch(availableExamNumbers, (examNumbers, previousExamNumbers) => {
         <p v-else-if="hasFullAccess && !availableExams.length" role="status">現在利用できる公開問題はありません。</p>
         <p v-if="qualification.status.value === 'error'" class="practice-start-error" role="alert">利用資格を確認できません。<button type="button" @click="qualification.refresh()">再確認</button></p>
         <div class="exam-grid-heading">
-          <p><strong>{{ hasFullAccess ? `公開中 ${catalogExams.length}回` : `模擬試験 全${EXAM_SET_COUNT}回` }}</strong><span>大問の順に演習</span></p>
+          <p><strong>{{ hasFullAccess ? `公開中 ${catalogExams.length}回` : `模擬試験 全${catalogExams.length}回` }}</strong><span>大問の順に演習</span></p>
           <NuxtLink v-if="PAYMENTS_ENABLED && !hasFullAccess" class="premium-info-link" to="/premium">
             <UIcon name="i-lucide-lock-keyhole" />
             模擬試験{{ FREE_EXAM_MAX + 1 }}以降はプレミアム会員向けです
