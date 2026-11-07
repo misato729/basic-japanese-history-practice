@@ -5,7 +5,7 @@ export const STATIC_EXAM_GROUPS: Record<number, { id: number; group_number: numb
     {
       "id": 1,
       "group_number": 1,
-      "title": "第1問　学び・記録・表現をめぐる歴史（16点）",
+      "title": "第1問　学び・記録・表現をめぐる歴史",
       "question_numbers": [
         1,
         2,
@@ -18,7 +18,7 @@ export const STATIC_EXAM_GROUPS: Record<number, { id: number; group_number: numb
     {
       "id": 2,
       "group_number": 2,
-      "title": "第2問　古代の国家と人々の生活（16点）",
+      "title": "第2問　古代の国家と人々の生活",
       "question_numbers": [
         7,
         8,
@@ -31,7 +31,7 @@ export const STATIC_EXAM_GROUPS: Record<number, { id: number; group_number: numb
     {
       "id": 3,
       "group_number": 3,
-      "title": "第3問　中世の所領支配・交易と地域社会（16点）",
+      "title": "第3問　中世の所領支配・交易と地域社会",
       "question_numbers": [
         13,
         14,
@@ -44,7 +44,7 @@ export const STATIC_EXAM_GROUPS: Record<number, { id: number; group_number: numb
     {
       "id": 4,
       "group_number": 4,
-      "title": "第4問　近世の統治と人々の暮らし（16点）",
+      "title": "第4問　近世の統治と人々の暮らし",
       "question_numbers": [
         19,
         20,
@@ -57,7 +57,7 @@ export const STATIC_EXAM_GROUPS: Record<number, { id: number; group_number: numb
     {
       "id": 5,
       "group_number": 5,
-      "title": "第5問　近代国家の成立と社会（12点）",
+      "title": "第5問　近代国家の成立と社会",
       "question_numbers": [
         25,
         26,
@@ -68,7 +68,7 @@ export const STATIC_EXAM_GROUPS: Record<number, { id: number; group_number: numb
     {
       "id": 6,
       "group_number": 6,
-      "title": "第6問　20世紀の政治・経済と人々の暮らし（24点）",
+      "title": "第6問　20世紀の政治・経済と人々の暮らし",
       "question_numbers": [
         29,
         30,
