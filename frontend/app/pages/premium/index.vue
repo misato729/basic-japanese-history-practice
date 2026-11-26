@@ -127,7 +127,7 @@ const startCheckout = async () => {
             <p>模擬試験{{ EXAM_CONFIG.payments.free_exam_count + 1 }}以降を利用できます。購入手続きは必要ありません。</p>
           </div>
         </div>
-        <NuxtLink class="primary-link" :to="`/practice/${Math.min(EXAM_CONFIG.payments.free_exam_count + 1, EXAM_CONFIG.exam.set_count)}/1`">問題演習へ</NuxtLink>
+        <NuxtLink class="primary-link" to="/#practice-launcher">問題演習へ</NuxtLink>
       </template>
 
       <template v-else-if="configStatus === 'pending' || configStatus === 'idle'">
@@ -171,7 +171,7 @@ const startCheckout = async () => {
     <section class="premium-notes">
       <h2>購入前にご確認ください</h2>
       <dl>
-        <div><dt>支払方法</dt><dd>クレジットカード（Stripe Checkout）</dd></div>
+        <div><dt>支払方法</dt><dd>クレジットカード、Apple Pay、Google Pay、Link、PayPay（利用可能な方法はStripeの決済画面に表示されます）</dd></div>
         <div><dt>提供時期</dt><dd>決済完了をStripeの通知で確認後、直ちに利用できます。通知の遅延時は反映まで時間を要する場合があります。</dd></div>
         <div><dt>返金</dt><dd>デジタルコンテンツの性質上、提供開始後の利用者都合による返金は原則として受け付けません。不具合や重複決済はお問い合わせください。</dd></div>
       </dl>

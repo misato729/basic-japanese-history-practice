@@ -94,7 +94,7 @@ onBeforeUnmount(() => { stopped = true; checkGeneration += 1; checking = false }
       <UIcon class="state-icon" name="i-lucide-circle-check-big" />
       <h1>プレミアム会員になりました</h1>
       <p>{{ PRICE_LABEL }}の買い切り購入が確認できました。模擬試験{{ EXAM_CONFIG.payments.free_exam_count + 1 }}以降を利用できます。</p>
-      <NuxtLink class="primary-link" :to="`/practice/${EXAM_CONFIG.payments.free_exam_count + 1}/1`">模擬試験{{ EXAM_CONFIG.payments.free_exam_count + 1 }}へ進む</NuxtLink>
+      <NuxtLink class="primary-link" to="/#practice-launcher">公開中の問題演習へ進む</NuxtLink>
     </div>
 
     <div v-else-if="state === 'available'" class="completion-card success-card" aria-live="polite">
