@@ -85,7 +85,9 @@ test('static sidebar slots use verified local group entries without claiming pub
       assert.deepEqual(catalogGroupLinks(row).map(link => link.questionNumber), [1, 10, 19, 28, 37])
     }
   }
-  assert.equal(rows.find(row => row.exam_number === 6)?.access, 'available')
+  assert.equal(rows.find(row => row.exam_number === 4)?.access, 'available')
+  assert.equal(rows.find(row => row.exam_number === 5)?.access, 'paid_membership_required')
+  assert.equal(rows.find(row => row.exam_number === 6)?.access, 'paid_membership_required')
 })
 
 test('free API results keep sparse public groups and append each locked slot once', () => {

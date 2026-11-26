@@ -3,19 +3,19 @@ import test from 'node:test'
 import { readFileSync } from 'node:fs'
 import { isVisibleExam, VISIBLE_EXAM_NUMBERS } from '../app/utils/examVisibility.ts'
 
-test('navigation explicitly allows only exams 1 through 4', () => {
-  assert.deepEqual(VISIBLE_EXAM_NUMBERS, [1, 2, 3, 4])
+test('navigation allows all ten configured exams', () => {
+  assert.deepEqual(VISIBLE_EXAM_NUMBERS, [1, 2, 3, 4, 5, 6, 7, 8, 9, 10])
   assert.ok(Object.isFrozen(VISIBLE_EXAM_NUMBERS))
 })
 
-test('static slots never produce navigation for exams 5 through 10', () => {
+test('static navigation retains the paid exam slots', () => {
   const slots = Array.from({ length: 10 }, (_, i) => ({ exam_number: i + 1, question_numbers: [] }))
-  assert.deepEqual(slots.filter(isVisibleExam).map(row => row.exam_number), [1, 2, 3, 4])
+  assert.deepEqual(slots.filter(isVisibleExam).map(row => row.exam_number), [1, 2, 3, 4, 5, 6, 7, 8, 9, 10])
 })
 
-test('published API results also exclude unfinished exams 5 and 6', () => {
+test('published API results retain available exams 5 and 6', () => {
   const catalog = Array.from({ length: 6 }, (_, i) => ({ exam_number: i + 1, question_numbers: [1, 7, 13] }))
-  assert.deepEqual(catalog.filter(isVisibleExam).map(row => row.exam_number), [1, 2, 3, 4])
+  assert.deepEqual(catalog.filter(isVisibleExam).map(row => row.exam_number), [1, 2, 3, 4, 5, 6])
 })
 
 test('filtering preserves published ordering, sparse positions, access and group metadata', () => {
@@ -26,20 +26,21 @@ test('filtering preserves published ordering, sparse positions, access and group
   ]
   const before = JSON.stringify(entries)
   const result = entries.filter(isVisibleExam)
-  assert.deepEqual(result.map(row => row.exam_number), [4, 2])
+  assert.deepEqual(result.map(row => row.exam_number), [4, 5, 2])
   assert.equal(result[0], entries[0])
-  assert.equal(result[1], entries[2])
+  assert.equal(result[1], entries[1])
+  assert.equal(result[2], entries[2])
   assert.equal(JSON.stringify(entries), before)
 })
 
 test('missing exams are not invented', () => {
   assert.deepEqual([{ exam_number: 3 }].filter(isVisibleExam), [{ exam_number: 3 }])
   assert.deepEqual([].filter(isVisibleExam), [])
-  assert.deepEqual([{ exam_number: 5 }, { exam_number: 6 }].filter(isVisibleExam), [])
+  assert.deepEqual([{ exam_number: 5 }, { exam_number: 6 }].filter(isVisibleExam), [{ exam_number: 5 }, { exam_number: 6 }])
 })
 
 test('invalid and future exam numbers are hidden', () => {
-  for (const exam_number of [0, -1, 1.5, 4.1, 5, 10, 11, NaN, Infinity]) {
+  for (const exam_number of [0, -1, 1.5, 4.1, 11, NaN, Infinity]) {
     assert.equal(isVisibleExam({ exam_number }), false)
   }
 })

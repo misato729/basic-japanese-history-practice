@@ -7,7 +7,9 @@ test('basic Japanese history keeps odd/even exam targets and independent authent
   for (const number of [2, 4, 10, 12]) assert.equal(examTargetName(number), '歴検2級日本史')
   for (const number of [0, -1, 1.5, NaN]) assert.equal(examTargetName(number), '')
   assert.equal(authCookieName(), 'exam-basic-japanese-history-practice-access-token')
-  assert.equal(EXAM_CONFIG.payments.enabled, false)
+  assert.equal(EXAM_CONFIG.payments.enabled, true)
+  assert.equal(EXAM_CONFIG.payments.free_exam_count, 4)
+  assert.equal(EXAM_CONFIG.payments.amount, 500)
   const invalid = structuredClone(EXAM_CONFIG)
   invalid.exam.numbering = { even: '', odd: 'センター試験日本史' }
   assert.throws(() => parseExamConfig(invalid), /numbering/)

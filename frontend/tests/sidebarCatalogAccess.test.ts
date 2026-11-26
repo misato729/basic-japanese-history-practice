@@ -29,9 +29,9 @@ function deferred<T>() {
   const promise = new Promise<T>((yes, no) => { resolve = yes; reject = no })
   return { promise, resolve, reject }
 }
-function harness(path: string, kind: string) {
+function harness(path: string, kind: string, initialUser: AuthUser | null = member(kind)) {
   const route = reactive({ path, fullPath: path, params: {} })
-  const user = ref(member(kind)), accessToken = ref<string | null>(kind === 'anonymous' ? null : 'synthetic-session')
+  const user = ref(initialUser), accessToken = ref<string | null>(kind === 'anonymous' ? null : 'synthetic-session')
   const authHeaders = computed(() => accessToken.value ? { Authorization: `Bearer ${accessToken.value}` } : {})
   const qualifications: ReturnType<typeof deferred<AuthUser | null>>[] = []
   const requests: { signal: AbortSignal, result: ReturnType<typeof deferred<{ data: catalog.ExamCatalogEntry[] }>> }[] = []
@@ -55,7 +55,9 @@ function harness(path: string, kind: string) {
     useRoute: () => route, useAuth: () => auth, useQualifiedExamAccess: useQualified, usePracticeFilterCatalog: useCatalog,
     withDefaults: (props: object, defaults: object) => ({ ...defaults, ...props }), defineProps: () => ({}), defineEmits: () => () => {}, defineModel: () => ref(false),
     window: { matchMedia: () => ({ matches: false, addEventListener() {}, removeEventListener() {} }) },
-    ...catalog, FREE_EXAM_MAX: paidConfig.payments.free_exam_count,
+    // Exercise entitlement lifecycle with the full synthetic catalog; the
+    // service's configured visibility has its own examVisibility tests.
+    ...catalog, isVisibleExam: () => true, FREE_EXAM_MAX: paidConfig.payments.free_exam_count,
     createSidebarExamCatalog: (rows: Parameters<typeof catalog.createSidebarExamCatalog>[0], published: boolean, fullAccess: boolean) => catalog.createSidebarExamCatalog(rows, published, fullAccess, paidConfig), hasFullExamAccess }
   const scope = effectScope()
   const setup = factory(sidebarSource, Object.keys(dependencies), '{ exams, catalogEnabled, isLoading, hasAccessError, examTarget, isStaticExamLocked, retryCatalog, openExam, toggleExam }')
@@ -66,6 +68,28 @@ function harness(path: string, kind: string) {
     dispose: () => { beforeUnmount.forEach(callback => callback()); scope.stop() } }
 }
 const sparseCatalog = (): catalog.ExamCatalogEntry[] => [{ exam_number: 1, question_numbers: [3, 7], groups: [{ id: 1, group_number: 1, title: 'Synthetic group', question_numbers: [3, 7] }] }]
+
+test('a direct paid question visit hydrates entitlement and unlocks parent and group links, then logout relocks them', async () => {
+  const h = harness('/practice/6/9', 'premium', null)
+  const paidCatalog = (): catalog.ExamCatalogEntry[] => [{ exam_number: 6, question_numbers: [9, 16], groups: [{ id: 60, group_number: 1, title: 'Synthetic paid group', question_numbers: [9, 16] }] }]
+  const paid = () => h.sidebar.exams.value.find((exam: catalog.ExamCatalogEntry) => exam.exam_number === 6)
+  try {
+    assert.equal(h.qualifications.length, 1)
+    assert.equal(h.requests.length, 1)
+    h.requests[0]!.result.resolve({ data: paidCatalog() }); await flush()
+    assert.equal(h.sidebar.isStaticExamLocked(paid()), true)
+    h.qualifications[0]!.resolve(member('premium')); await flush()
+    assert.equal(h.requests.length, 2)
+    h.requests[1]!.result.resolve({ data: paidCatalog() }); await flush()
+    assert.equal(h.sidebar.isStaticExamLocked(paid()), false)
+    assert.equal(h.sidebar.examTarget(paid()), '/practice/6/9')
+    assert.equal(paid().groupLinks[0].to, '/practice/6/9')
+    h.accessToken.value = null; h.user.value = null; await flush()
+    assert.equal(h.sidebar.isStaticExamLocked(paid()), true)
+    assert.equal(h.sidebar.examTarget(paid()), '/premium')
+    assert.ok(paid().groupLinks.every((entry: { to: string }) => entry.to === '/premium'))
+  } finally { h.dispose() }
+})
 function assertStatic(h: ReturnType<typeof harness>) {
   assert.equal(h.sidebar.catalogEnabled.value, false)
   assert.equal(h.sidebar.isLoading.value, false)
