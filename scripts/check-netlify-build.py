@@ -6,6 +6,7 @@ from pathlib import Path
 import subprocess
 import sys
 import tomllib
+from urllib.parse import urlparse
 
 
 def load_build(root):
@@ -17,6 +18,10 @@ def load_build(root):
     environment = defaults.get("environment", {}) | production.get("environment", {})
     if not all(isinstance(value, str) for value in environment.values()):
         raise ValueError("Netlify build environment values must be strings")
+    api_base = environment.get("NUXT_PUBLIC_API_BASE", "")
+    parsed_api_base = urlparse(api_base)
+    if parsed_api_base.scheme != "https" or not parsed_api_base.hostname or parsed_api_base.username or parsed_api_base.password or parsed_api_base.path not in ("", "/") or parsed_api_base.params or parsed_api_base.query or parsed_api_base.fragment:
+        raise ValueError("NUXT_PUBLIC_API_BASE must be an HTTPS origin for the production static build")
     base = (root / build["base"]).resolve()
     publish = base / build["publish"]
     resolved_publish = publish.resolve()
@@ -36,7 +41,7 @@ def build_environment(configured):
     return environment
 
 
-def verify_output(base, publish):
+def verify_output(base, publish, api_base=None):
     for name in ("index.html", "200.html"):
         path = publish / name
         if not path.is_file() or path.stat().st_size == 0:
@@ -44,6 +49,8 @@ def verify_output(base, publish):
     for extension in ("js", "css"):
         if not any(path.is_file() and path.stat().st_size for path in (publish / "_nuxt").rglob(f"*.{extension}")):
             raise ValueError(f"Netlify publish output has no nonempty {extension} assets")
+    if api_base and api_base not in (publish / "200.html").read_text():
+        raise ValueError("Netlify publish output does not contain the configured API origin")
     # Preserve service-specific routing files without copying deployment targets
     # into templates that do not yet define them.
     for name in ("_headers", "_redirects"):
@@ -64,7 +71,7 @@ def check_build(root):
     subprocess.run(["npm", "ci", "--no-audit", "--no-fund"], cwd=base, env=environment, check=True)
     print("Generating with the production netlify.toml settings (NETLIFY=true)", flush=True)
     subprocess.run(["sh", "-c", command], cwd=base, env=environment, check=True)
-    verify_output(base, publish)
+    verify_output(base, publish, configured["NUXT_PUBLIC_API_BASE"])
     print("Netlify publish directory verified: HTML, JS/CSS and configured routing files")
 
 

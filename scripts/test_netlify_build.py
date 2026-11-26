@@ -20,18 +20,19 @@ class NetlifyBuildTests(unittest.TestCase):
         self.root = Path(self.directory.name)
         self.base = self.root / "web"
         self.base.mkdir()
-        self.config = '[build]\nbase="web"\ncommand="npm run generate"\npublish="site-files"\n[build.environment]\nNODE_VERSION="24"\nNITRO_PRESET="static"\nNUXT_PUBLIC_API_BASE=""\n'
+        self.api_base = "https://api.example.invalid"
+        self.config = f'[build]\nbase="web"\ncommand="npm run generate"\npublish="site-files"\n[build.environment]\nNODE_VERSION="24"\nNITRO_PRESET="static"\nNUXT_PUBLIC_API_BASE="{self.api_base}"\n'
         self.write_config(self.config)
 
     def write_config(self, text):
         (self.root / "netlify.toml").write_text(text)
 
-    def output(self, directory):
+    def output(self, directory, api_base=None):
         directory.mkdir(parents=True)
         for name in ("index.html", "200.html", "_nuxt/app.js", "_nuxt/app.css"):
             path = directory / name
             path.parent.mkdir(parents=True, exist_ok=True)
-            path.write_text("synthetic build output")
+            path.write_text(f"synthetic build output {api_base or ''}")
 
     def test_uses_configured_base_command_environment_and_publish(self):
         self.write_config(self.config + '\n[context.production.environment]\nNODE_VERSION="26"\n')
@@ -41,10 +42,10 @@ class NetlifyBuildTests(unittest.TestCase):
             self.assertEqual(options["env"]["CI"], "true")
             self.assertEqual(options["env"]["NITRO_PRESET"], "static")
             self.assertEqual(options["env"]["NODE_VERSION"], "26")
-            self.assertEqual(options["env"]["NUXT_PUBLIC_API_BASE"], "")
+            self.assertEqual(options["env"]["NUXT_PUBLIC_API_BASE"], self.api_base)
             if command[0] == "sh":
                 self.assertEqual(command, ["sh", "-c", "npm run generate"])
-                self.output(self.base / "site-files")
+                self.output(self.base / "site-files", self.api_base)
         with patch.object(netlify.subprocess, "run", side_effect=run) as runner:
             netlify.check_build(self.root)
         self.assertEqual(runner.call_count, 2)
@@ -60,6 +61,20 @@ class NetlifyBuildTests(unittest.TestCase):
             with patch.object(netlify.subprocess, "run", side_effect=run):
                 with self.assertRaisesRegex(ValueError, "missing or empty: index.html"):
                     netlify.check_build(self.root)
+
+    def test_production_api_base_must_be_an_https_origin(self):
+        for value in ("", "http://api.example.invalid", "https://user:secret@api.example.invalid", "https://api.example.invalid/path", "https://api.example.invalid?query=1"):
+            self.write_config(self.config.replace(self.api_base, value))
+            with self.assertRaisesRegex(ValueError, "HTTPS origin"):
+                netlify.load_build(self.root)
+
+    def test_generated_runtime_config_must_contain_api_origin(self):
+        output = self.base / "site-files"
+        self.output(output)
+        with self.assertRaisesRegex(ValueError, "configured API origin"):
+            netlify.verify_output(self.base, output, self.api_base)
+        (output / "200.html").write_text(f"runtime config {self.api_base}")
+        netlify.verify_output(self.base, output, self.api_base)
 
     def test_stale_output_is_rejected_without_deletion_or_running_commands(self):
         self.output(self.base / "site-files")
