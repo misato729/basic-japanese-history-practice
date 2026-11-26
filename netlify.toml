@@ -6,7 +6,8 @@ publish = ".output/public"
 [build.environment]
 NODE_VERSION = "24"
 NITRO_PRESET = "static"
-NUXT_PUBLIC_API_BASE = ""
+# Keep browser API calls independent of Netlify's generated SPA fallback order.
+NUXT_PUBLIC_API_BASE = "https://basic-japanese-history-practice.fly.dev"
 
 [[redirects]]
 from = "/api/*"
